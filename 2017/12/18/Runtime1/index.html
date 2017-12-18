@@ -103,11 +103,12 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-47250191c7f985ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-794ab74d4e98c578.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-3d69f0d3b41f0cf8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-37d7f5310f20127d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-0fef9dd74410e946.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-4da4906e3b197def.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-9d63f8e7703f4de8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1742252-6176fa7cccbbdc6e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-12-18T01:35:36.226Z">
+<meta property="og:updated_time" content="2017-12-18T08:46:49.814Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Runtime原理探究">
 <meta name="twitter:description" content="一、Runtime简介Runtime简称运行时。OC就是运行时机制，也就是在运行时候的一些机制，其中最主要的是消息机制。
@@ -406,11 +407,13 @@
 <ul>
 <li>第一步：检测这个selector是不是要被忽略的。</li>
 <li>第二步：检测这个target对象是不是nil对象。（nil对象执行任何一个方法都不会Crash，因为会被忽略掉）</li>
-<li>第三步：首先会根据target对象的isa指针获取它所对应的类（class）。</li>
-<li>第四步：优先在类（class）的cache里面查找与选择子（selector）名称相符，如果找不到，再到methodLists查找。</li>
-<li>第五步：如果没有在类（class）找到，再到父类（super_class）查找，再到元类（metaclass），直至根metaclass。</li>
-<li>第六步：一旦找到与选择子（selector）名称相符的方法，就跳至其实现代码。如果没有找到，就会执行消息转发（message forwarding）。</li>
+<li>第三步：首先会根据target(objc_object)对象的isa指针获取它所对应的类（objc_class）。</li>
+<li>第四步：查看缓存中是否存在方法，系统把近期发送过的消息记录在其中，苹果认为这样可以提高效率: 优先在类（class）的cache里面查找是否有与选择子（selector）名称相符的方法。<br>如果有，则找到objc_method中的IMP类型（函数指针）的成员method_imp去找到实现内容，并执行;<br>如果缓存中没有命中，那么到该类的方法表(methodLists)查找该方法，依次从后往前查找。</li>
+<li>第五步：如果没有在类（class）找到，再到父类（super_class）查找，直至根类。</li>
+<li>第六步：一旦找到与选择子（selector）名称相符的方法，就跳至其实现代码。</li>
+<li>第七步: 如果没有找到，就会执行消息转发（message forwarding）的第一步动态解析。</li>
 </ul>
+<p><strong>如果是调用类方法</strong><br>objc_class中的isa指向该类的元类(metaclass)<br>如果是调用类方法的话，那么就会利用objc_class中的成员isa找到元类(metaclass)，然后寻找方法，直至根metaclass,没有找到的话则仍然进入动态解析。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">#import &lt;objc/message.h&gt;</div><div class="line">// 创建person对象</div><div class="line">Person *p = [[Person alloc] init];</div><div class="line"></div><div class="line">// 调用对象方法</div><div class="line">[p eat];</div><div class="line"></div><div class="line">// 本质：让对象发送消息</div><div class="line">objc_msgSend(p, @selector(eat));</div><div class="line"></div><div class="line">// 调用类方法的方式：两种</div><div class="line">// 第一种通过类名调用</div><div class="line">[Person eat];</div><div class="line">// 第二种通过类对象调用</div><div class="line">[[Person class] eat];</div><div class="line"></div><div class="line">// 用类名调用类方法，底层会自动把类名转换成类对象调用</div><div class="line">// 本质：让类对象发送消息</div><div class="line">objc_msgSend([Person class], @selector(eat));</div></pre></td></tr></table></figure>
 <ul>
 <li>消息机制原理：对象根据方法编号SEL去映射表查找对应的方法实现<br><img src="http://upload-images.jianshu.io/upload_images/1742252-794ab74d4e98c578.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></li>
@@ -426,7 +429,18 @@
 <li>3.完整转发<br>下面我们详细讨论一下这三个步骤。</li>
 </ul>
 <h2 id="动态方法解析"><a href="#动态方法解析" class="headerlink" title="动态方法解析"></a>动态方法解析</h2><p>对象在接收到未知的消息时，首先会调用所属类的类方法<code>+resolveInstanceMethod:</code>(实例方法)或者<code>+resolveClassMethod:</code>(类方法)。在这个方法中，我们有机会为该未知消息新增一个”处理方法””。不过使用该方法的前提是我们已经实现了该“处理方法”，只需要在运行时通过<code>class_addMethod</code>函数动态添加到类里面就可以了。如下代码所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">void functionForMethod1(id self, SEL _cmd) &#123;</div><div class="line">NSLog(@&quot;%@, %p&quot;, self, _cmd);</div><div class="line">&#125;</div><div class="line"></div><div class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel &#123;</div><div class="line">NSString *selectorString = NSStringFromSelector(sel);</div><div class="line">if ([selectorString isEqualToString:@&quot;method1&quot;]) &#123;</div><div class="line">class_addMethod(self.class, @selector(method1), (IMP)functionForMethod1, &quot;@:&quot;);</div><div class="line">&#125;</div><div class="line">return [super resolveInstanceMethod:sel];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>不过这种方案更多的是为了实现@dynamic属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">void otherEat(id self, SEL cmd) &#123;</div><div class="line">NSLog(@&quot;blog.yoonangel.com&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel &#123;</div><div class="line">if ([NSStringFromSelector(sel) isEqualToString:@&quot;eat&quot;]) &#123;</div><div class="line">class_addMethod(self, sel, (IMP)otherEat, &quot;v@&quot;);</div><div class="line">return YES;</div><div class="line">&#125;</div><div class="line">return [super resolveInstanceMethod:sel];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>class_addMethod方法可谓是核心，那么依次来看他的参数的含义：</p>
+<ul>
+<li>first：添加到哪个类</li>
+<li>second：添加方法的方法编号（选择子）</li>
+<li>third：添加方法的函数实现(IMP函数指针)</li>
+<li>fourth：IMP指针指向的函数返回值和参数类型<br>v代表无返回值void @代表id类型对象-&gt;self  :代表选择子SEL-&gt;_cmd</li>
+<li>“v@:” v代表无返回值void，如果是i则代表int 无参数</li>
+<li>“i@:” 代表返回值是int类型，无参数</li>
+<li>“v@:i@:” 代表返回值是void类型，参数是int类型，存在一个参数（多参数依次累加）”v@:@@” 代表 两个参数的没有返回值。</li>
+</ul>
+<p>这种方案更多的是为了实现@dynamic属性。</p>
 <h2 id="备用接收者"><a href="#备用接收者" class="headerlink" title="备用接收者"></a>备用接收者</h2><p>如果在上一步无法处理消息，则Runtime会继续调以下方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (id)forwardingTargetForSelector:(SEL)aSelector</div></pre></td></tr></table></figure></p>
 <p>如果一个对象实现了这个方法，并返回一个非nil的结果，则这个对象会作为消息的新接收者，且消息会被分发到这个对象。当然这个对象不能是<code>self</code>自身，否则就是出现无限循环。当然，如果我们没有指定相应的对象来处理<code>aSelector</code>，则应该调用父类的实现来返回结果。</p>
 <p>使用这个方法通常是在对象内部，可能还有一系列其它对象能处理该消息，我们便可借这些对象来处理消息并返回，这样在对象外部看来，还是由该对象亲自处理了这一消息。如下代码所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">@interface SUTRuntimeMethodHelper : NSObject</div><div class="line">- (void)method2;</div><div class="line">@end</div><div class="line">@implementation SUTRuntimeMethodHelper</div><div class="line">- (void)method2 &#123;</div><div class="line">NSLog(@&quot;%@, %p&quot;, self, _cmd);</div><div class="line">&#125;</div><div class="line">@end</div><div class="line">#pragma mark -</div><div class="line">@interface SUTRuntimeMethod () &#123;</div><div class="line">SUTRuntimeMethodHelper *_helper;</div><div class="line">&#125;</div><div class="line">@end</div><div class="line">@implementation SUTRuntimeMethod</div><div class="line">+ (instancetype)object &#123;</div><div class="line">return [[self alloc] init];</div><div class="line">&#125;</div><div class="line">- (instancetype)init &#123;</div><div class="line">self = [super init];</div><div class="line">if (self != nil) &#123;</div><div class="line">_helper = [[SUTRuntimeMethodHelper alloc] init];</div><div class="line">&#125;</div><div class="line">return self;</div><div class="line">&#125;</div><div class="line">- (void)test &#123;</div><div class="line">[self performSelector:@selector(method2)];</div><div class="line">&#125;</div><div class="line">- (id)forwardingTargetForSelector:(SEL)aSelector &#123;</div><div class="line">NSLog(@&quot;forwardingTargetForSelector&quot;);</div><div class="line">NSString *selectorString = NSStringFromSelector(aSelector);</div><div class="line">// 将消息转发给_helper来处理</div><div class="line">if ([selectorString isEqualToString:@&quot;method2&quot;]) &#123;</div><div class="line">return _helper;</div><div class="line">&#125;</div><div class="line">return [super forwardingTargetForSelector:aSelector];</div><div class="line">&#125;</div><div class="line">@end</div></pre></td></tr></table></figure></p>
@@ -450,6 +464,7 @@
 </li>
 </ul>
 <p><img src="http://upload-images.jianshu.io/upload_images/1742252-3d69f0d3b41f0cf8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1742252-37d7f5310f20127d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
 <blockquote>
 <p>接收者在每一步中均有机会处理消息，步骤越靠后，处理消息的代价越大。最好在第一步就能处理完，这样系统就可以把此方法缓存起来了。</p>
 </blockquote>
@@ -503,9 +518,26 @@
 <p>理解这几个术语之间的关系最好的方式是：一个类维护一个运行时可接收的消息分发表；分发表中的每个入口是一个方法(Method)，其中key是一个特定名称，即选择器(SEL)，其对应一个实现(IMP)，即指向底层C函数的指针。</p>
 <p>为了swizzle一个方法，我们可以在分发表中将一个方法的现有的选择器映射到不同的实现，而将该选择器对应的原始实现关联到一个新的选择器中。</p>
 <p>在 Cocoa 编程中，大部分的类都继承于 NSObject ，有些 NSObject 提供的方法仅仅是为了查询运动时系统的相关信息，这此方法都可以反查自己。比如 <code>-isKindOfClass:</code> 和 <code>-isMemberOfClass:</code> 都是用于查询在继承体系中的位置。 <code>-respondsToSelector:</code>指明是否接受特定的消息。 <code>+conformsToProtocol:</code> 指明是否要求实现在指定的协议中声明的方法。 <code>-methodForSelector:</code>提供方法实现的地址。</p>
+<p>简单概括下Runtime的方法列表和用法</p>
+<ol>
+<li>objc_getClass 获取类名</li>
+<li>objc_msgSend 调用对象的sel</li>
+<li>class_getClassMethod 获取类方法</li>
+<li>method_exchangeImplementations 交换两个方法</li>
+<li>class_addMethod 给类添加方法</li>
+<li>class_copyIvarList 获取成员变量信息</li>
+<li>class_copyPropertyList 获取属性信息</li>
+<li>class_copyMethodList 获取方法信息</li>
+<li>class_copyProtocolList 获取协议信息</li>
+<li>objc_setAssociatedObject 动态关联set方法</li>
+<li>objc_getAssociatedObject 动态关联get方法</li>
+<li>ivar_getName 获取变量名<code>char *</code>类型</li>
+<li>ivar_getTypeEncoding 获取到属性变量的类型<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html" target="_blank" rel="external">详情类型介绍</a></li>
+</ol>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a href="http://southpeak.github.io/2014/10/25/objective-c-runtime-1/" target="_blank" rel="external">http://southpeak.github.io/2014/10/25/objective-c-runtime-1/</a></li>
 <li><a href="http://yulingtianxia.com/blog/2017/11/05/Objective-C-Message-Throttle-and-Debounce/" target="_blank" rel="external">http://yulingtianxia.com/blog/2017/11/05/Objective-C-Message-Throttle-and-Debounce/</a></li>
+<li><a href="https://draveness.me/message" target="_blank" rel="external">https://draveness.me/message</a></li>
 <li><a href="http://www.desgard.com/objc_msgSend1/" target="_blank" rel="external">http://www.desgard.com/objc_msgSend1/</a></li>
 <li><a href="http://www.jianshu.com/p/3e050ec3b759" target="_blank" rel="external">http://www.jianshu.com/p/3e050ec3b759</a></li>
 <li><a href="http://www.jianshu.com/p/950d7c8797bc" target="_blank" rel="external">http://www.jianshu.com/p/950d7c8797bc</a></li>
