@@ -84,19 +84,20 @@
 
 
 
-<meta name="description" content="所有label继承于一个基类, 由基类监听字体改变的通知, 从而改变所有Label的字体, 同时存储字体改变.
-demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
+<meta name="description" content="Launch Image 设置前言朋友是做混合开发的, 今天问了我iOS启动图出现的一个bug: 启动时Launch Image 出现偏移。 我从没遇到过, 提供了很多思路, 最后他找到问题症结并解决了。 最后发现是 Launch Image 名称的问题, 就是刚启动时显示的是iPhoneX的Launch Image, 后来代码里又设置了一遍启动图, 变成iPhone5的Launch Image了">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS改变字体大小功能的实现">
-<meta property="og:url" content="http://yoursite.com/2017/03/01/iOS改变字体大小功能的实现/index.html">
+<meta property="og:title" content="Launch Image 设置">
+<meta property="og:url" content="http://yoursite.com/2017/12/27/Launch-Image/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="所有label继承于一个基类, 由基类监听字体改变的通知, 从而改变所有Label的字体, 同时存储字体改变.
-demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
-<meta property="og:updated_time" content="2017-03-05T15:35:36.000Z">
+<meta property="og:description" content="Launch Image 设置前言朋友是做混合开发的, 今天问了我iOS启动图出现的一个bug: 启动时Launch Image 出现偏移。 我从没遇到过, 提供了很多思路, 最后他找到问题症结并解决了。 最后发现是 Launch Image 名称的问题, 就是刚启动时显示的是iPhoneX的Launch Image, 后来代码里又设置了一遍启动图, 变成iPhone5的Launch Image了">
+<meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_22.png">
+<meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_23.png">
+<meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_25.png">
+<meta property="og:updated_time" content="2017-12-27T08:23:34.942Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS改变字体大小功能的实现">
-<meta name="twitter:description" content="所有label继承于一个基类, 由基类监听字体改变的通知, 从而改变所有Label的字体, 同时存储字体改变.
-demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
+<meta name="twitter:title" content="Launch Image 设置">
+<meta name="twitter:description" content="Launch Image 设置前言朋友是做混合开发的, 今天问了我iOS启动图出现的一个bug: 启动时Launch Image 出现偏移。 我从没遇到过, 提供了很多思路, 最后他找到问题症结并解决了。 最后发现是 Launch Image 名称的问题, 就是刚启动时显示的是iPhoneX的Launch Image, 后来代码里又设置了一遍启动图, 变成iPhone5的Launch Image了">
+<meta name="twitter:image" content="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_22.png">
 
 
 
@@ -124,13 +125,13 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/03/01/iOS改变字体大小功能的实现/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/12/27/Launch-Image/"/>
 
 
 
 
 
-  <title> iOS改变字体大小功能的实现 | Hexo </title>
+  <title> Launch Image 设置 | Hexo </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -244,7 +245,7 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/01/iOS改变字体大小功能的实现/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/27/Launch-Image/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="John Doe">
@@ -268,7 +269,7 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
             
             
               
-                iOS改变字体大小功能的实现
+                Launch Image 设置
               
             
           </h1>
@@ -281,8 +282,8 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-01T21:52:10+08:00">
-                2017-03-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-27T10:29:28+08:00">
+                2017-12-27
               </time>
             
 
@@ -317,8 +318,10 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
       
 
       
-        <p>所有label继承于一个基类, 由基类监听字体改变的通知, 从而改变所有Label的字体, 同时存储字体改变.</p>
-<p>demo地址: <a href="https://github.com/AnGuoli/AYChangeFontDemo" target="_blank" rel="external">https://github.com/AnGuoli/AYChangeFontDemo</a></p>
+        <h1 id="Launch-Image-设置"><a href="#Launch-Image-设置" class="headerlink" title="Launch Image 设置"></a>Launch Image 设置</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>朋友是做混合开发的, 今天问了我iOS启动图出现的一个bug: 启动时Launch Image 出现偏移。 我从没遇到过, 提供了很多思路, 最后他找到问题症结并解决了。 最后发现是 <code>Launch Image</code> 名称的问题, 就是刚启动时显示的是iPhoneX的Launch Image, 后来代码里又设置了一遍启动图, 变成iPhone5的Launch Image了。 陪他解决的过程中我发现自己关于Launch Image这里的设置有些不严谨, 现在整理一下。</p>
+<h2 id="各手机型号Launch-Image尺寸、命名"><a href="#各手机型号Launch-Image尺寸、命名" class="headerlink" title="各手机型号Launch Image尺寸、命名"></a>各手机型号Launch Image尺寸、命名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">手机型号:                              图片尺寸px    pt            命名</div><div class="line">iPhoen3Gs   （非Retina屏 3.5寸 @1x) :  320 x 480    320 x 480     LaunchImage.png</div><div class="line">iPhone 4/4s  (          3.5寸 @2x) :  640 x 960    320 x 480     LaunchImage@2x.png</div><div class="line">iPhone 5/5s  (Retina4   4寸   @2x) :  640 x 1136   320 x 568     LaunchImage-568h@2x.png</div><div class="line">iPhone 6/6s  (Retina HD 4.7寸 @2x) :  750 x 1334   375 x 667     LaunchImage-800-667h@2x.png</div><div class="line">iPhone 6p/6sp(Retina HD 5.5寸 @3x) :  1242 x 2208  414 x 736     LaunchImage-800-Portrait-736h@3x.png</div><div class="line">iPhone X     (          5.8寸 @3x) :  1125 x 2436  375 x 812     LaunchImage-812h@3x.png</div></pre></td></tr></table></figure>
+<h2 id="Xcode-里的设置"><a href="#Xcode-里的设置" class="headerlink" title="Xcode 里的设置"></a>Xcode 里的设置</h2><p><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_22.png" alt=""><br><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_23.png" alt=""><br><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_25.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">iPhone X Portrait iOS11+ 竖屏规格：    1125px × 2436px (375pt × 812pt @3x)  LaunchImage-812h@3x.png</div><div class="line">iPhone X Landscape iOS11+ 横屏规格：   2436px × 1125px (812pt × 375pt @3x)</div><div class="line">iPhone Portrait iOS 8-Retina HD 5.5  1242px × 2208px (@3x)                LaunchImage-800-Portrait-736h@3x.png</div><div class="line">iPhone Portrait iOS 8-Retina HD 4.7  750px × 1334px  (@2x)                LaunchImage-800-667h@2x.png</div><div class="line">iPhone Portrait iOS 7,8-2x           640px × 960px   (@2x)                LaunchImage@2x.png</div><div class="line">iPhone Portrait iOS 7,8-Retina 4     640px × 1136px  (@2x)                LaunchImage-568h@2x.png</div><div class="line">iPhone Portrait iOS 5,6-1x           320px × 480px   (@1x)                LaunchImage.png</div><div class="line">iPhone Portrait iOS 5,6-2x           640px × 960px   (@2x)                LaunchImage@2x.png</div><div class="line">iPhone Portrait iOS 5,6-Retina4      640px × 1136px  (@2x)                LaunchImage-568h@2x.png</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -345,8 +348,8 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/18/iOS时间戳时间互相转化/" rel="next" title="iOS时间戳时间互相转化">
-                <i class="fa fa-chevron-left"></i> iOS时间戳时间互相转化
+              <a href="/2017/12/18/Runtime1/" rel="next" title="Runtime原理探究">
+                <i class="fa fa-chevron-left"></i> Runtime原理探究
               </a>
             
           </div>
@@ -354,10 +357,6 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/03/10/iOS-TIPS/" rel="prev" title="iOS TIPS">
-                iOS TIPS <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -404,8 +403,17 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -444,6 +452,22 @@ demo地址: https://github.com/AnGuoli/AYChangeFontDemo">
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Launch-Image-设置"><span class="nav-number">1.</span> <span class="nav-text">Launch Image 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#各手机型号Launch-Image尺寸、命名"><span class="nav-number">1.2.</span> <span class="nav-text">各手机型号Launch Image尺寸、命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xcode-里的设置"><span class="nav-number">1.3.</span> <span class="nav-text">Xcode 里的设置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>

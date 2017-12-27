@@ -239,6 +239,126 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/27/Launch-Image/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="John Doe">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Hexo">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Hexo" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/12/27/Launch-Image/" itemprop="url">
+                  Launch Image 设置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-27T10:29:28+08:00">
+                2017-12-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Launch-Image-设置"><a href="#Launch-Image-设置" class="headerlink" title="Launch Image 设置"></a>Launch Image 设置</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>朋友是做混合开发的, 今天问了我iOS启动图出现的一个bug: 启动时Launch Image 出现偏移。 我从没遇到过, 提供了很多思路, 最后他找到问题症结并解决了。 最后发现是 <code>Launch Image</code> 名称的问题, 就是刚启动时显示的是iPhoneX的Launch Image, 后来代码里又设置了一遍启动图, 变成iPhone5的Launch Image了。 陪他解决的过程中我发现自己关于Launch Image这里的设置有些不严谨, 现在整理一下。</p>
+<h2 id="各手机型号Launch-Image尺寸、命名"><a href="#各手机型号Launch-Image尺寸、命名" class="headerlink" title="各手机型号Launch Image尺寸、命名"></a>各手机型号Launch Image尺寸、命名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">手机型号:                              图片尺寸px    pt            命名</div><div class="line">iPhoen3Gs   （非Retina屏 3.5寸 @1x) :  320 x 480    320 x 480     LaunchImage.png</div><div class="line">iPhone 4/4s  (          3.5寸 @2x) :  640 x 960    320 x 480     LaunchImage@2x.png</div><div class="line">iPhone 5/5s  (Retina4   4寸   @2x) :  640 x 1136   320 x 568     LaunchImage-568h@2x.png</div><div class="line">iPhone 6/6s  (Retina HD 4.7寸 @2x) :  750 x 1334   375 x 667     LaunchImage-800-667h@2x.png</div><div class="line">iPhone 6p/6sp(Retina HD 5.5寸 @3x) :  1242 x 2208  414 x 736     LaunchImage-800-Portrait-736h@3x.png</div><div class="line">iPhone X     (          5.8寸 @3x) :  1125 x 2436  375 x 812     LaunchImage-812h@3x.png</div></pre></td></tr></table></figure>
+<h2 id="Xcode-里的设置"><a href="#Xcode-里的设置" class="headerlink" title="Xcode 里的设置"></a>Xcode 里的设置</h2><p><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_22.png" alt=""><br><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_23.png" alt=""><br><img src="http://ofutv2nt8.bkt.clouddn.com/Snip20171227_25.png" alt=""></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">iPhone X Portrait iOS11+ 竖屏规格：    1125px × 2436px (375pt × 812pt @3x)  LaunchImage-812h@3x.png</div><div class="line">iPhone X Landscape iOS11+ 横屏规格：   2436px × 1125px (812pt × 375pt @3x)</div><div class="line">iPhone Portrait iOS 8-Retina HD 5.5  1242px × 2208px (@3x)                LaunchImage-800-Portrait-736h@3x.png</div><div class="line">iPhone Portrait iOS 8-Retina HD 4.7  750px × 1334px  (@2x)                LaunchImage-800-667h@2x.png</div><div class="line">iPhone Portrait iOS 7,8-2x           640px × 960px   (@2x)                LaunchImage@2x.png</div><div class="line">iPhone Portrait iOS 7,8-Retina 4     640px × 1136px  (@2x)                LaunchImage-568h@2x.png</div><div class="line">iPhone Portrait iOS 5,6-1x           320px × 480px   (@1x)                LaunchImage.png</div><div class="line">iPhone Portrait iOS 5,6-2x           640px × 960px   (@2x)                LaunchImage@2x.png</div><div class="line">iPhone Portrait iOS 5,6-Retina4      640px × 1136px  (@2x)                LaunchImage-568h@2x.png</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/18/Runtime1/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2091,134 +2211,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/17/hello-world/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="John Doe">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.gif">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Hexo">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="Hexo" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/11/17/hello-world/" itemprop="url">
-                  Hello World
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-17T18:53:39+08:00">
-                2016-11-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -2257,7 +2256,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
