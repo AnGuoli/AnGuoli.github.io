@@ -346,6 +346,7 @@
 <p>答:项目中使用NSOperation的优点是NSOperation是对线程的高度抽象，在项目中使用它，会使项目的程序结构更好，子类化NSOperation的设计思路，是具有面向对象的优点(复用、封装)，使得实现是多线程支持，而接口简单，建议在复杂项目中使用。项目中使用GCD的优点是GCD本身非常简单、易用，对于不复杂的多线程操作，会节省代码量，而Block参数的使用，会是代码更为易读，建议在简单项目中使用。<br>原文链接：<a href="http://www.jianshu.com/p/0d2713164646" target="_blank" rel="external">http://www.jianshu.com/p/0d2713164646</a></p>
 <p><a href="http://www.cnblogs.com/hanjun/p/3667874.html" target="_blank" rel="external">http://www.cnblogs.com/hanjun/p/3667874.html</a></p>
 <p>Thread 是这三种范式里面相对轻量级的，但也是使用起来最负责的，你需要自己管理thread的生命周期，线程之间的同步。线程共享同一应用程序的部分内存空间， 它们拥有对数据相同的访问权限。你得协调多个线程对同一数据的访问，一般做法是在访问之前加锁，这会导致一定的性能开销。在 iOS 中我们可以使用多种形式的 thread:<br>Cocoa threads: 使用NSThread 或直接从 NSObject 的类方法 performSelectorInBackground:withObject: 来创建一个线程。如果你选择thread来实现多线程，那么 NSThread 就是官方推荐优先选用的方式。<br>Cocoa operations是基于 Obective-C实现的，类 NSOperation 以面向对象的方式封装了用户需要执行的操作，我们只要聚焦于我们需要做的事情，而不必太操心线程的管理，同步等事情，因为NSOperation已经为我 们封装了这些事情。 NSOperation 是一个抽象基类，我们必须使用它的子类。iOS 提供了两种默认实现：NSInvocationOperation 和 NSBlockOperation。<br>Grand Central Dispatch (GCD): iOS4 才开始支持，它提供了一些新的特性，以及运行库来支持多核并行编程，它的关注点更高：如何在多个 cpu 上提升效率。</p>
+<p><img src="/2017/12/29/multithreading/1.jpg" alt=""></p>
 
           
         
