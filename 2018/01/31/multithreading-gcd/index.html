@@ -91,7 +91,7 @@
 <meta property="og:site_name" content="An Guoli's Blog">
 <meta property="og:description" content="GCD全称是Grand Central Dispatch，“伟大的中枢调度器”。GCD是苹果为多核的并行运算提出的解决方案，所以会自动合理地利用更多的CPU内核（比如双核、四核），最重要的是它会自动管理线程的生命周期（创建线程、调度任务、销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写任何线程管理代码。同时它使用的也是 c语言，提供了非常多强大的函数, 由于使用了 Block（Swi">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%90%84%E7%A7%8D%E9%98%9F%E5%88%97%E7%9A%84%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C.png">
-<meta property="og:updated_time" content="2018-01-31T08:40:06.559Z">
+<meta property="og:updated_time" content="2018-01-31T09:10:23.130Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多线程 GCD">
 <meta name="twitter:description" content="GCD全称是Grand Central Dispatch，“伟大的中枢调度器”。GCD是苹果为多核的并行运算提出的解决方案，所以会自动合理地利用更多的CPU内核（比如双核、四核），最重要的是它会自动管理线程的生命周期（创建线程、调度任务、销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写任何线程管理代码。同时它使用的也是 c语言，提供了非常多强大的函数, 由于使用了 Block（Swi">
@@ -357,10 +357,51 @@
 </ul>
 <p>1、并发队列（Concurrent Dispatch Queue）<br>可以让多个任务并发（同时）执行（自动开启多个线程同时执行任务）<br>并发功能只有在异步（dispatch_async）函数下才有效</p>
 <p>2、串行队列（Serial Dispatch Queue）<br>让任务一个接着一个地执行（一个任务执行完毕后，再执行下一个任务）</p>
-<pre><code>| 同步执行            | 异步执行
-</code></pre><p>——– | —————–  | ———<br>串行队列  | 当前线程，一个一个执行 | 其他线程，一个一个执行<br>并行队列  | 当前线程，一个一个执行 | 开很多线程，一起执行</p>
-<pre><code>| 并行队列            | 手动创建串行队列        | 主队列
-</code></pre><p>——– | —————–  | ——————– | ————-<br>同步执行  | 当前线程，一个一个执行 | 当前线程，一个一个执行   | 没有开启新线程, 一个一个执行<br>异步执行  | 开很多线程，一起执行   | 其他线程，一个一个执行   | 没有开启新线程, 一个一个执行</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">同步执行</th>
+<th style="text-align:right">异步执行</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>串行队列</td>
+<td style="text-align:center">当前线程，一个一个执行</td>
+<td style="text-align:right">其他线程，一个一个执行</td>
+</tr>
+<tr>
+<td>并行队列</td>
+<td style="text-align:center">当前线程，一个一个执行</td>
+<td style="text-align:right">开很多线程，一起执行</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>并行队列</th>
+<th>手动创建串行队列</th>
+<th>主队列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同步执行</td>
+<td>当前线程，一个一个执行</td>
+<td>当前线程，一个一个执行</td>
+<td>没有开启新线程, 一个一个执行</td>
+</tr>
+<tr>
+<td>异步执行</td>
+<td>开很多线程，一起执行</td>
+<td>其他线程，一个一个执行</td>
+<td>没有开启新线程, 一个一个执行</td>
+</tr>
+</tbody>
+</table>
 <p><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%90%84%E7%A7%8D%E9%98%9F%E5%88%97%E7%9A%84%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C.png" alt=""></p>
 <p>GCD使用步骤</p>
 <ol>

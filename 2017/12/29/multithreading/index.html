@@ -99,7 +99,7 @@
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3.png">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E4%BA%92%E6%96%A5%E9%94%81.png">
 <meta property="og:image" content="http://yoursite.com/2017/12/29/multithreading/1.jpg">
-<meta property="og:updated_time" content="2018-01-31T08:33:03.976Z">
+<meta property="og:updated_time" content="2018-01-31T08:58:27.932Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多线程">
 <meta name="twitter:description" content="多线程多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。
@@ -428,7 +428,29 @@
 <li>GCD</li>
 <li>NSOperation &amp; NSOperationQueue</li>
 </ul>
-<h2 id="Pthreads"><a href="#Pthreads" class="headerlink" title="Pthreads"></a>Pthreads</h2><h2 id="NSThread"><a href="#NSThread" class="headerlink" title="NSThread"></a>NSThread</h2><h2 id="GCD"><a href="#GCD" class="headerlink" title="GCD"></a>GCD</h2><h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><h2 id="多线程运用"><a href="#多线程运用" class="headerlink" title="多线程运用"></a>多线程运用</h2><p>线程的状态</p>
+<h2 id="Pthreads"><a href="#Pthreads" class="headerlink" title="Pthreads"></a>Pthreads</h2><h2 id="NSThread"><a href="#NSThread" class="headerlink" title="NSThread"></a>NSThread</h2><p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-pthreads-nsthread/" target="_blank" rel="external">多线程 pthread、NSThread</a></p>
+<ul>
+<li>Pthreads</li>
+<li>NSThread<ul>
+<li>创建并启动<ul>
+<li>先创建线程类，再启动</li>
+<li>创建并自动启动线程</li>
+<li>使用 performSelector 的方法创建(隐式创建)并自动启动线程</li>
+</ul>
+</li>
+<li>其他方法</li>
+</ul>
+</li>
+</ul>
+<h2 id="GCD"><a href="#GCD" class="headerlink" title="GCD"></a>GCD</h2><p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-gcd/" target="_blank" rel="external">多线程 GCD</a></p>
+<ul>
+<li>任务和队列<ul>
+<li>任务：执行什么操作</li>
+<li>队列：用来存放任务</li>
+</ul>
+</li>
+</ul>
+<h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><h2 id="多线程运用"><a href="#多线程运用" class="headerlink" title="多线程运用"></a>多线程运用</h2><p>线程的状态</p>
 <p><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81.png" alt=""></p>
 <p>多线程的安全隐患</p>
 <p>一块资源可能会被多个线程共享，也就是多个线程可能会访问同一块资源。<br>当多个线程访问同一块资源时，很容易引发数据错乱和数据安全问题。<br><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3.png" alt=""></p>
