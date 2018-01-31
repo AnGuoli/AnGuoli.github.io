@@ -84,27 +84,78 @@
 
 
 
-<meta name="description" content="多线程多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。
-多线程（multithreading），是指从软件或者硬件上实现多个线程并发执行的技术。具有多线程能力的计算机因有硬件支持而能够在同一时间执行多于一个线程，进而提升整体处理性能。
-原理：同一时间，CPU只能处理1条线程，只有1条线程在工作（执行）,多线">
+<meta name="description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+
+原理
+优缺点
+主线程
+面试题:
+iOS NSThread NSOperation GCD的优缺点
+NSOperation 相比于 GCD 有哪些优势？
+你的项目什么时候选择使用GCD,什么时候选择NSOperation?
+线程间怎么通信?
+
+
+Pthreads
+NSThre">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程">
 <meta property="og:url" content="http://yoursite.com/2017/12/29/multithreading/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="多线程多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。
-多线程（multithreading），是指从软件或者硬件上实现多个线程并发执行的技术。具有多线程能力的计算机因有硬件支持而能够在同一时间执行多于一个线程，进而提升整体处理性能。
-原理：同一时间，CPU只能处理1条线程，只有1条线程在工作（执行）,多线">
+<meta property="og:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+
+原理
+优缺点
+主线程
+面试题:
+iOS NSThread NSOperation GCD的优缺点
+NSOperation 相比于 GCD 有哪些优势？
+你的项目什么时候选择使用GCD,什么时候选择NSOperation?
+线程间怎么通信?
+
+
+Pthreads
+NSThre">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/4%E7%A7%8D%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%AF%94%E8%BE%83.png">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81.png">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3.png">
 <meta property="og:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E4%BA%92%E6%96%A5%E9%94%81.png">
 <meta property="og:image" content="http://yoursite.com/2017/12/29/multithreading/1.jpg">
-<meta property="og:updated_time" content="2018-01-31T08:58:27.932Z">
+<meta property="og:updated_time" content="2018-01-31T09:51:53.821Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多线程">
-<meta name="twitter:description" content="多线程多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。
-多线程（multithreading），是指从软件或者硬件上实现多个线程并发执行的技术。具有多线程能力的计算机因有硬件支持而能够在同一时间执行多于一个线程，进而提升整体处理性能。
-原理：同一时间，CPU只能处理1条线程，只有1条线程在工作（执行）,多线">
+<meta name="twitter:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+
+原理
+优缺点
+主线程
+面试题:
+iOS NSThread NSOperation GCD的优缺点
+NSOperation 相比于 GCD 有哪些优势？
+你的项目什么时候选择使用GCD,什么时候选择NSOperation?
+线程间怎么通信?
+
+
+Pthreads
+NSThre">
 <meta name="twitter:image" content="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/4%E7%A7%8D%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%AF%94%E8%BE%83.png">
 
 
@@ -362,7 +413,37 @@
       
 
       
-        <h1 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h1><p>多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。</p>
+        <h2 id="系列文章"><a href="#系列文章" class="headerlink" title="系列文章:"></a>系列文章:</h2><blockquote>
+<p><a href="http://blog.yoonangel.com/2017/12/29/multithreading/" target="_blank" rel="external">多线程</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-pthreads-nsthread/" target="_blank" rel="external">多线程 pthread、NSThread</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-gcd/" target="_blank" rel="external">多线程 GCD</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-nsoperation/" target="_blank" rel="external">多线程 NSOperation</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-example/" target="_blank" rel="external">多线程运用</a></p>
+</blockquote>
+<ul>
+<li>原理</li>
+<li>优缺点</li>
+<li>主线程</li>
+<li>面试题:<ul>
+<li>iOS NSThread NSOperation GCD的优缺点</li>
+<li>NSOperation 相比于 GCD 有哪些优势？</li>
+<li>你的项目什么时候选择使用GCD,什么时候选择NSOperation?</li>
+<li>线程间怎么通信?</li>
+</ul>
+</li>
+<li>Pthreads</li>
+<li>NSThread</li>
+<li>GCD</li>
+<li>NSOperation和NSOperationQueue</li>
+<li>多线程运用</li>
+<li>线程的状态</li>
+<li>多线程的安全隐患<ul>
+<li>互斥锁 优点与缺点</li>
+<li>atomic与nonatomic</li>
+</ul>
+</li>
+</ul>
+<h1 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h1><p>多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。</p>
 <p>多线程（multithreading），是指从软件或者硬件上实现多个线程并发执行的技术。具有多线程能力的计算机因有硬件支持而能够在同一时间执行多于一个线程，进而提升整体处理性能。</p>
 <p><strong>原理</strong>：<br>同一时间，CPU只能处理1条线程，只有1条线程在工作（执行）,多线程并发（同时）执行，其实是CPU快速地在多条线程之间调度（切换）,如果CPU调度线程的时间足够快，就造成了多线程并发执行的假象。</p>
 <ul>
@@ -447,12 +528,91 @@
 <li>任务和队列<ul>
 <li>任务：执行什么操作</li>
 <li>队列：用来存放任务</li>
+<li>同步、异步、并发、串行 表格</li>
+</ul>
+</li>
+<li>创建任务<ul>
+<li>同步任务</li>
+<li>异步任务</li>
+</ul>
+</li>
+<li>创建队列<ul>
+<li>使用<code>dispatch_get_main_queue()</code>获取主队列</li>
+<li>使用<code>dispatch_queue_create</code>函数创建队列 (串行队列, 并行队列)</li>
+<li>使用<code>dispatch_get_global_queue</code>获取全局并发队列</li>
+</ul>
+</li>
+<li>GCD运用<ul>
+<li>一、线程间通信<ul>
+<li>performSelector方法 (在主线程上执行操作<br>、在指定线程上执行操作)</li>
+<li>GCD方法 <code>dispatch_async(dispatch_get_main_queue(), ^{ // 回到主线程，执行UI刷新操作}); });</code></li>
+</ul>
+</li>
+<li>二、延时执行<ul>
+<li><code>performSelector: withObject: afterDelay:</code></li>
+<li>GCD <code>dispatch_after</code></li>
+</ul>
+</li>
+<li>三、一次性代码 单例模式 <code>dispatch_once</code></li>
+<li>四、快速迭代 <code>dispatch_apply</code></li>
+<li>五、队列组 <code>dispatch_group_async</code></li>
+<li>六、GCD 计时器应用 </li>
+<li>七、栅栏 <code>dispatch_barrier</code></li>
+<li>死锁面试题</li>
+</ul>
+</li>
+<li>GCD总结<ul>
+<li>同步主队列死锁原因</li>
+<li>同步串行队列不会发生死锁原因</li>
 </ul>
 </li>
 </ul>
-<h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><h2 id="多线程运用"><a href="#多线程运用" class="headerlink" title="多线程运用"></a>多线程运用</h2><p>线程的状态</p>
+<h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-nsoperation/" target="_blank" rel="external">多线程 NSOperation</a></p>
+<ul>
+<li>NSOperation相对于GCD：</li>
+<li>NSOperation剖析</li>
+<li>添加任务<ul>
+<li>NSInvocationOperation</li>
+<li>NSBlockOperation</li>
+<li>自定义子类继承NSOperation</li>
+</ul>
+</li>
+<li>创建队列<ul>
+<li>主队列</li>
+<li>其他队列</li>
+<li>添加队列 添加依赖</li>
+</ul>
+</li>
+<li>其他方法</li>
+</ul>
+<h2 id="多线程运用"><a href="#多线程运用" class="headerlink" title="多线程运用"></a>多线程运用</h2><p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-example/" target="_blank" rel="external">多线程运用</a></p>
+<ul>
+<li>线程同步<ul>
+<li>互斥锁 <code>@synchronized(self) {//需要执行的代码块}</code></li>
+<li>同步执行<ul>
+<li>GCD <code>dispatch_sync</code></li>
+<li>NSOperation &amp; NSOperationQueue</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>延迟执行<ul>
+<li><code>performSelector: withObject: afterDelay:</code></li>
+<li>GCD <code>dispatch_after</code></li>
+<li>NSTimer </li>
+</ul>
+</li>
+<li>单例模式</li>
+<li>从其他线程回到主线程的方法<ul>
+<li>NSThread   <code>performSelectorOnMainThread</code></li>
+<li>GCD   <code>dispatch_async(dispatch_get_main_queue(), ^{ });</code></li>
+<li>NSOperationQueue   <code>[[NSOperationQueue mainQueue] addOperationWithBlock:^{}];</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>线程的状态</strong></p>
 <p><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81.png" alt=""></p>
-<p>多线程的安全隐患</p>
+<p><strong>多线程的安全隐患</strong></p>
 <p>一块资源可能会被多个线程共享，也就是多个线程可能会访问同一块资源。<br>当多个线程访问同一块资源时，很容易引发数据错乱和数据安全问题。<br><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3.png" alt=""></p>
 <p>解决办法：（互斥锁）<br><img src="http://ofutv2nt8.bkt.clouddn.com/blog/duoxiancheng/%E4%BA%92%E6%96%A5%E9%94%81.png" alt=""></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">// 注意：锁定1份代码只用1把锁，用多把锁是无效的</div><div class="line">@synchronized(锁对象) &#123;</div><div class="line">// 需要锁定的代码</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
@@ -465,17 +625,17 @@
 <li>Race Condition (竞态条件)<br>这种情况是指基于特定序列或时机的事件的软件系统以不受控制的方式运行的行为，<br>竞态条件可导致无法预测的行为，例如程序的并发任务执行的确切顺序</li>
 <li>Deadlock (死锁)<br>所谓的死锁是指两个(或多个)线程都卡住了，都在等待对方完成后执行，<br>第一个不能完成是因为在等待第二个的完成，但第二个也不能完成，<br>是因为它在等待第一个完成</li>
 </ul>
-<p>atomic与nonatomic</p>
+<p><strong>atomic与nonatomic</strong></p>
 <p>OC在定义属性时有nonatomic和atomic两种选择</p>
-<p>@property(nonatomic,copy)NSString<em>name;<br>@property(atomic,copy)NSString</em>name;</p>
+<p>@property(nonatomic,copy)NSString*name;</p>
+<p>@property(atomic,copy)NSString*name;</p>
 <p>atomic：原子属性，为setter方法加锁（默认就是atomic）<br>线程安全，需要消耗大量的资源</p>
 <p>nonatomic：非原子属性，不会为setter方法加锁<br>非线程安全，适合内存小的移动设备</p>
-<p>开发建议</p>
+<p><strong>开发建议</strong></p>
 <p>所有属性都声明为nonatomic</p>
 <p>尽量避免多线程抢夺同一块资源</p>
 <p>尽量将加锁、资源抢夺的业务逻辑交给服务器端处理，减小移动客户端的压力</p>
 <p><img src="/2017/12/29/multithreading/1.jpg" alt=""></p>
-<p><a href="http://www.jianshu.com/p/5dfe92d28746" target="_blank" rel="external">原文链接</a><br>作者：cactus_Hsia<br>链接：<a href="https://www.jianshu.com/p/ddbb152bfbd8" target="_blank" rel="external">https://www.jianshu.com/p/ddbb152bfbd8</a></p>
 
       
     </div>
@@ -669,7 +829,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#多线程"><span class="nav-number">1.</span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主线程"><span class="nav-number">1.1.</span> <span class="nav-text">主线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pthreads"><span class="nav-number">1.2.</span> <span class="nav-text">Pthreads</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSThread"><span class="nav-number">1.3.</span> <span class="nav-text">NSThread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD"><span class="nav-number">1.4.</span> <span class="nav-text">GCD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSOperation和NSOperationQueue"><span class="nav-number">1.5.</span> <span class="nav-text">NSOperation和NSOperationQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程运用"><span class="nav-number">1.6.</span> <span class="nav-text">多线程运用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系列文章"><span class="nav-number">1.</span> <span class="nav-text">系列文章:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多线程"><span class="nav-number"></span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主线程"><span class="nav-number">1.</span> <span class="nav-text">主线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pthreads"><span class="nav-number">2.</span> <span class="nav-text">Pthreads</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSThread"><span class="nav-number">3.</span> <span class="nav-text">NSThread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCD"><span class="nav-number">4.</span> <span class="nav-text">GCD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSOperation和NSOperationQueue"><span class="nav-number">5.</span> <span class="nav-text">NSOperation和NSOperationQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程运用"><span class="nav-number">6.</span> <span class="nav-text">多线程运用</span></a></li></ol></div>
             
 
           </div>

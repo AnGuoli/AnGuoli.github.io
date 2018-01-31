@@ -338,12 +338,16 @@
       
         
           
-          多线程运用线程同步所谓线程同步就是为了防止多个线程抢夺同一个资源造成的数据安全问题，所采取的一种措施。当然也有很多实现方法，请往下看：
+          系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
 
-互斥锁 ：给需要同步的代码块加一个互斥锁，就可以保证每次只有一个线程访问此代码块。
+多线程运用线程同步所谓线程同步就是为了防止多个线程抢夺同一个资源造成的数据安全问题，所采取的一种措施。当然也有很多实现方法，请往下看：
 
-OBJECTIVE-C
-123@synchronized(self) &#1
+互斥锁 ：给需要同步的代码块加一个互斥
           ...
           <!--noindex-->
           <div class="post-more-link text-center">
@@ -466,8 +470,14 @@ OBJECTIVE-C
       
         
           
-          NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
-NSOperation相对于GCD：NSOperation拥有更多的函数可
+          系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，
           ...
           <!--noindex-->
           <div class="post-more-link text-center">
@@ -590,7 +600,14 @@ NSOperation相对于GCD：NSOperation拥有更多的函数可
       
         
           
-          GCD全称是Grand Central Dispatch，“伟大的中枢调度器”。GCD是苹果为多核的并行运算提出的解决方案，所以会自动合理地利用更多的CPU内核（比如双核、四核），最重要的是它会自动管理线程的生命周期（创建线程、调度任务、销毁线程），程序员只需要告诉GCD想要执行什么任务，不需要编写
+          系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+GCD全称是Grand Central Dispatch，“伟大的中枢调度器”。GCD是苹果为多核的并行运算提出的解决方案，所以会自动合理地利用更多的CPU内核（比如双核、四核
           ...
           <!--noindex-->
           <div class="post-more-link text-center">
@@ -713,8 +730,15 @@ NSOperation相对于GCD：NSOperation拥有更多的函数可
       
         
           
-          Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
-1234567891011121314#import &lt;pthread.h&gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches withEvent:(U
+          系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
+1234567891011121314#import &lt;pthread.h&gt;/
           ...
           <!--noindex-->
           <div class="post-more-link text-center">
@@ -978,8 +1002,21 @@ NSOperation相对于GCD：NSOperation拥有更多的函数可
       
         
           
-          多线程多线程是为了同步完成多项任务，不是为了提高运行效率，而是为了提高资源使用效率来提高系统的效率。线程是在同一时间需要完成多项任务的时候实现的。
-多线程（multithreading），是指从软件或者硬件上实现多个线程并发执行的技术。具有多线程能力的计算机因有硬件支持而能够在同一时间执行多于一个线
+          系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+
+原理
+优缺点
+主线程
+面试题:
+iOS NSThread NSOperation GCD的优缺点
+NSOperation 相比于 GCD 有哪些优势？
+你的项目什么时候选择使
           ...
           <!--noindex-->
           <div class="post-more-link text-center">

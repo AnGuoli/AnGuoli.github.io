@@ -84,19 +84,40 @@
 
 
 
-<meta name="description" content="Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
-1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event &amp;#123;    pthread_t thread;    //创建">
+<meta name="description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
+1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程 pthread、NSThread">
 <meta property="og:url" content="http://yoursite.com/2018/01/31/multithreading-pthreads-nsthread/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
-1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event &amp;#123;    pthread_t thread;    //创建">
-<meta property="og:updated_time" content="2018-01-31T08:08:29.385Z">
+<meta property="og:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
+1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches">
+<meta property="og:updated_time" content="2018-01-31T09:52:59.283Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多线程 pthread、NSThread">
-<meta name="twitter:description" content="Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
-1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event &amp;#123;    pthread_t thread;    //创建">
+<meta name="twitter:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+Pthreads这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架
+1234567891011121314#import &amp;lt;pthread.h&amp;gt;// 创建线程，并执行任务- (void)touchesBegan:(NSSet *)touches">
 
 
 
@@ -335,7 +356,14 @@
       
 
       
-        <h2 id="Pthreads"><a href="#Pthreads" class="headerlink" title="Pthreads"></a>Pthreads</h2><p>这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架</p>
+        <h2 id="系列文章"><a href="#系列文章" class="headerlink" title="系列文章:"></a>系列文章:</h2><blockquote>
+<p><a href="http://blog.yoonangel.com/2017/12/29/multithreading/" target="_blank" rel="external">多线程</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-pthreads-nsthread/" target="_blank" rel="external">多线程 pthread、NSThread</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-gcd/" target="_blank" rel="external">多线程 GCD</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-nsoperation/" target="_blank" rel="external">多线程 NSOperation</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-example/" target="_blank" rel="external">多线程运用</a></p>
+</blockquote>
+<h2 id="Pthreads"><a href="#Pthreads" class="headerlink" title="Pthreads"></a>Pthreads</h2><p>这是一套在很多操作系统上都通用的多线程API, 基于 c语言 的框架</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#import &lt;pthread.h&gt;</div><div class="line"></div><div class="line">// 创建线程，并执行任务</div><div class="line">- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event &#123;</div><div class="line">    pthread_t thread;</div><div class="line">    //创建一个线程并自动执行</div><div class="line">    pthread_create(&amp;thread, NULL, start, NULL);</div><div class="line">&#125;</div><div class="line"></div><div class="line">void *start(void *data) &#123;</div><div class="line">    NSLog(@&quot;%@&quot;, [NSThread currentThread]);</div><div class="line"></div><div class="line">    return NULL;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>打印输出</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2015-07-27 23:57:21.689 testThread[10616:2644653] &lt;NSThread: 0x7fbb48d33690&gt;&#123;number = 2, name = (null)&#125;</div></pre></td></tr></table></figure>
@@ -562,7 +590,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pthreads"><span class="nav-number">1.</span> <span class="nav-text">Pthreads</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSThread"><span class="nav-number">2.</span> <span class="nav-text">NSThread</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建并启动"><span class="nav-number">2.1.</span> <span class="nav-text">创建并启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他方法"><span class="nav-number">2.2.</span> <span class="nav-text">其他方法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系列文章"><span class="nav-number">1.</span> <span class="nav-text">系列文章:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pthreads"><span class="nav-number">2.</span> <span class="nav-text">Pthreads</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSThread"><span class="nav-number">3.</span> <span class="nav-text">NSThread</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建并启动"><span class="nav-number">3.1.</span> <span class="nav-text">创建并启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他方法"><span class="nav-number">3.2.</span> <span class="nav-text">其他方法</span></a></li></ol></li></ol></div>
             
 
           </div>

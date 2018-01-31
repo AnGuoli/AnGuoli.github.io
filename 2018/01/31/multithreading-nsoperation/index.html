@@ -84,25 +84,40 @@
 
 
 
-<meta name="description" content="NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
-NSOperation相对于GCD：NSOperation拥有更多的函数可用
-NSOperationQueue中，可以建立各个NSOperation之间的依赖关系。
-NSOp">
+<meta name="description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
+NSOperation相对于GCD：NSOpera">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多线程 NSOperation">
 <meta property="og:url" content="http://yoursite.com/2018/01/31/multithreading-nsoperation/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
-NSOperation相对于GCD：NSOperation拥有更多的函数可用
-NSOperationQueue中，可以建立各个NSOperation之间的依赖关系。
-NSOp">
-<meta property="og:updated_time" content="2018-01-31T08:39:02.450Z">
+<meta property="og:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
+NSOperation相对于GCD：NSOpera">
+<meta property="og:updated_time" content="2018-01-31T09:52:37.109Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="多线程 NSOperation">
-<meta name="twitter:description" content="NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
-NSOperation相对于GCD：NSOperation拥有更多的函数可用
-NSOperationQueue中，可以建立各个NSOperation之间的依赖关系。
-NSOp">
+<meta name="twitter:description" content="系列文章:
+多线程
+多线程 pthread、NSThread
+多线程 GCD
+多线程 NSOperation
+多线程运用
+
+NSOperation和NSOperationQueueNSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。
+NSOperation相对于GCD：NSOpera">
 
 
 
@@ -341,7 +356,14 @@ NSOp">
       
 
       
-        <h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><p>NSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。</p>
+        <h2 id="系列文章"><a href="#系列文章" class="headerlink" title="系列文章:"></a>系列文章:</h2><blockquote>
+<p><a href="http://blog.yoonangel.com/2017/12/29/multithreading/" target="_blank" rel="external">多线程</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-pthreads-nsthread/" target="_blank" rel="external">多线程 pthread、NSThread</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-gcd/" target="_blank" rel="external">多线程 GCD</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-nsoperation/" target="_blank" rel="external">多线程 NSOperation</a></p>
+<p><a href="http://blog.yoonangel.com/2018/01/31/multithreading-example/" target="_blank" rel="external">多线程运用</a></p>
+</blockquote>
+<h2 id="NSOperation和NSOperationQueue"><a href="#NSOperation和NSOperationQueue" class="headerlink" title="NSOperation和NSOperationQueue"></a>NSOperation和NSOperationQueue</h2><p>NSOperation是苹果封装的一套多线程的东西，不像GCD是纯C语言的，这个是OC的。但相比较之下GCD会更快一些，但本质上NSOPeration是对GDC的封装。</p>
 <h3 id="NSOperation相对于GCD："><a href="#NSOperation相对于GCD：" class="headerlink" title="NSOperation相对于GCD："></a>NSOperation相对于GCD：</h3><p>NSOperation拥有更多的函数可用</p>
 <p>NSOperationQueue中，可以建立各个NSOperation之间的依赖关系。</p>
 <p>NSOperationQueue支持KVO。可以监测operation是否正在执行（isExecuted）、是否结束（isFinished），是否取消（isCanceld）</p>
@@ -629,7 +651,7 @@ NSOp">
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#NSOperation和NSOperationQueue"><span class="nav-number">1.</span> <span class="nav-text">NSOperation和NSOperationQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation相对于GCD："><span class="nav-number">1.1.</span> <span class="nav-text">NSOperation相对于GCD：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation剖析"><span class="nav-number">1.2.</span> <span class="nav-text">NSOperation剖析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加任务"><span class="nav-number">1.3.</span> <span class="nav-text">添加任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建队列"><span class="nav-number">1.4.</span> <span class="nav-text">创建队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他方法"><span class="nav-number">1.5.</span> <span class="nav-text">其他方法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系列文章"><span class="nav-number">1.</span> <span class="nav-text">系列文章:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSOperation和NSOperationQueue"><span class="nav-number">2.</span> <span class="nav-text">NSOperation和NSOperationQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation相对于GCD："><span class="nav-number">2.1.</span> <span class="nav-text">NSOperation相对于GCD：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSOperation剖析"><span class="nav-number">2.2.</span> <span class="nav-text">NSOperation剖析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加任务"><span class="nav-number">2.3.</span> <span class="nav-text">添加任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建队列"><span class="nav-number">2.4.</span> <span class="nav-text">创建队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他方法"><span class="nav-number">2.5.</span> <span class="nav-text">其他方法</span></a></li></ol></li></ol></div>
             
 
           </div>
