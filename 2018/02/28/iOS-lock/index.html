@@ -1,0 +1,1276 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="本文非原创 知识整理大佬的博客
+
+@synchronized
+dispatch_semaphore
+NSLock
+NSRecursiveLock递归锁
+NSConditionLock条件锁
+NSCondition
+pthread_mutex
+pthread_mutex(recursive)
+OSSpinLock
+
+锁是最常用的同步工具。一段代码段在同一个时间只能允许被有限个线程访问，比如一个线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程中的锁总结">
+<meta property="og:url" content="http://yoursite.com/2018/02/28/iOS-lock/index.html">
+<meta property="og:site_name" content="An Guoli's Blog">
+<meta property="og:description" content="本文非原创 知识整理大佬的博客
+
+@synchronized
+dispatch_semaphore
+NSLock
+NSRecursiveLock递归锁
+NSConditionLock条件锁
+NSCondition
+pthread_mutex
+pthread_mutex(recursive)
+OSSpinLock
+
+锁是最常用的同步工具。一段代码段在同一个时间只能允许被有限个线程访问，比如一个线程">
+<meta property="og:image" content="http://yoursite.com/2018/02/28/iOS-lock/锁的性能对比.png">
+<meta property="og:updated_time" content="2018-02-28T14:48:46.332Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多线程中的锁总结">
+<meta name="twitter:description" content="本文非原创 知识整理大佬的博客
+
+@synchronized
+dispatch_semaphore
+NSLock
+NSRecursiveLock递归锁
+NSConditionLock条件锁
+NSCondition
+pthread_mutex
+pthread_mutex(recursive)
+OSSpinLock
+
+锁是最常用的同步工具。一段代码段在同一个时间只能允许被有限个线程访问，比如一个线程">
+<meta name="twitter:image" content="http://yoursite.com/2018/02/28/iOS-lock/锁的性能对比.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/28/iOS-lock/"/>
+
+
+
+
+
+  <title> 多线程中的锁总结 | An Guoli's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+<a href="https://github.com/anguoli"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">An Guoli's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/28/iOS-lock/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="安国立">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="An Guoli's Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="An Guoli's Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                多线程中的锁总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-28T20:17:38+08:00">
+                2018-02-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文非原创 知识整理大佬的博客</p>
+<ol>
+<li>@synchronized</li>
+<li>dispatch_semaphore</li>
+<li>NSLock</li>
+<li>NSRecursiveLock递归锁</li>
+<li>NSConditionLock条件锁</li>
+<li>NSCondition</li>
+<li>pthread_mutex</li>
+<li>pthread_mutex(recursive)</li>
+<li>OSSpinLock</li>
+</ol>
+<p>锁是最常用的同步工具。一段代码段在同一个时间只能允许被有限个线程访问，比如一个线程 A 进入需要保护代码之前添加简单的互斥锁，另一个线程 B 就无法访问，只有等待前一个线程 A 执行完被保护的代码后解锁，B 线程才能访问被保护代码。<br>加解锁速度不表示锁的效率，只表示加解锁操作在执行时的复杂程度</p>
+<h2 id="一-八种锁"><a href="#一-八种锁" class="headerlink" title="一. 八种锁"></a>一. 八种锁</h2><h3 id="1-synchronized"><a href="#1-synchronized" class="headerlink" title="1. @synchronized"></a>1. @synchronized</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">    NSObject *obj = [[NSObject alloc] init];</div><div class="line">    </div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</div><div class="line">        @synchronized(obj) &#123;</div><div class="line">            NSLog(@&quot;需要线程同步的操作1 开始&quot;);</div><div class="line">            sleep(3);</div><div class="line">            NSLog(@&quot;需要线程同步的操作1 结束&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    </div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</div><div class="line">        sleep(1);</div><div class="line">        @synchronized(obj) &#123;</div><div class="line">            NSLog(@&quot;需要线程同步的操作2&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    </div><div class="line">//上面结果的执行结果为：</div><div class="line"></div><div class="line">2016-06-29 20:48:35.747 SafeMultiThread[35945:580107] 需要线程同步的操作1 开始</div><div class="line">2016-06-29 20:48:38.748 SafeMultiThread[35945:580107] 需要线程同步的操作1 结束</div><div class="line">2016-06-29 20:48:38.749 SafeMultiThread[35945:580118] 需要线程同步的操作2</div><div class="line">``` </div><div class="line"></div><div class="line">@synchronized(obj)指令使用的obj为该锁的唯一标识，只有当标识相同时，才为满足互斥，如果线程2中的@synchronized(obj)改为@synchronized(self),刚线程2就不会被阻塞，@synchronized指令实现锁的优点就是我们不需要在代码中显式的创建锁对象，便可以实现锁的机制，但作为一种预防措施，@synchronized块会隐式的添加一个异常处理例程来保护代码，该处理例程会在异常抛出的时候自动的释放互斥锁。所以如果不想让隐式的异常处理例程带来额外的开销，你可以考虑使用锁对象。</div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure>
+<p>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{<br>        @synchronized(self) {<br>            sleep(2);<br>            NSLog(@”线程1”);<br>        }<br>        NSLog(@”线程1解锁成功”);<br>    });</p>
+<p>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{<br>        sleep(1);<br>        @synchronized(self) {<br>            NSLog(@”线程2”);<br>        }<br>    });</p>
+<p>2016-08-19 16:42:21.752 ThreadLockControlDemo[2220:208291] 线程1<br>2016-08-19 16:42:21.752 ThreadLockControlDemo[2220:208291] 线程1解锁成功<br>2016-08-19 16:42:21.752 ThreadLockControlDemo[2220:208278] 线程2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@synchronized(object) 指令使用的 object 为该锁的唯一标识，只有当标识相同时，才满足互斥，所以如果线程 2 中的 @synchronized(self) 改为@synchronized(self.view)，则线程2就不会被阻塞，@synchronized 指令实现锁的优点就是我们不需要在代码中显式的创建锁对象，便可以实现锁的机制，但作为一种预防措施，@synchronized 块会隐式的添加一个异常处理例程来保护代码，该处理例程会在异常抛出的时候自动的释放互斥锁。@synchronized 还有一个好处就是不用担心忘记解锁了。</div><div class="line">如果在 @sychronized(object)&#123;&#125; 内部 object 被释放或被设为 nil，从我做的测试的结果来看，的确没有问题，但如果 object 一开始就是 nil，则失去了锁的功能。不过虽然 nil 不行，但 @synchronized([NSNull null]) 是完全可以的。^ ^.</div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line">这其实是一个 OC 层面的锁， 主要是通过牺牲性能换来语法上的简洁与可读。</div><div class="line">我们知道 @synchronized 后面需要紧跟一个 OC 对象，它实际上是把这个对象当做锁来使用。这是通过一个哈希表来实现的，OC 在底层使用了一个互斥锁的数组(你可以理解为锁池)，通过对对象去哈希值来得到对应的互斥锁。</div><div class="line"></div><div class="line">具体的实现原理可以参考这篇文章: [关于 @synchronized，这儿比你想知道的还要多](http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/)</div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line"></div><div class="line">### 2. dispatch_semaphore</div></pre></td></tr></table></figure></p>
+<p> dispatch_semaphore_t signal = dispatch_semaphore_create(1);<br>    dispatch_time_t overTime = dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC);</p>
+<pre><code>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_semaphore_wait(signal, overTime);
+        NSLog(@&quot;需要线程同步的操作1 开始&quot;);
+        sleep(2);
+        NSLog(@&quot;需要线程同步的操作1 结束&quot;);
+    dispatch_semaphore_signal(signal);
+});
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);
+    dispatch_semaphore_wait(signal, overTime);
+        NSLog(@&quot;需要线程同步的操作2&quot;);
+    dispatch_semaphore_signal(signal);
+});
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">dispatch_semaphore是GCD用来同步的一种方式，与他相关的共有三个函数，分别是dispatch_semaphore_create，dispatch_semaphore_signal，dispatch_semaphore_wait。</div><div class="line"></div><div class="line">（1）dispatch_semaphore_create的声明为：</div><div class="line"></div><div class="line">dispatch_semaphore_t  dispatch_semaphore_create(long value);</div><div class="line"></div><div class="line">传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。</div><div class="line"></div><div class="line">值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL。</div><div class="line"></div><div class="line">（2）dispatch_semaphore_signal的声明为：</div><div class="line"></div><div class="line">long dispatch_semaphore_signal(dispatch_semaphore_t dsema)</div><div class="line"></div><div class="line">这个函数会使传入的信号量dsema的值加1；</div><div class="line"></div><div class="line">(3) dispatch_semaphore_wait的声明为：</div><div class="line"></div><div class="line">long dispatch_semaphore_wait(dispatch_semaphore_t dsema, dispatch_time_t timeout)；</div><div class="line"></div><div class="line">这个函数会使传入的信号量dsema的值减1；</div><div class="line"></div><div class="line">这个函数的作用是这样的，如果dsema信号量的值大于0，该函数所处线程就继续执行下面的语句，并且将信号量的值减1；如果desema的值为0，那么这个函数就阻塞当前线程等待timeout（注意timeout的类型为dispatch_time_t，不能直接传入整形或float型数），如果等待的期间desema的值被dispatch_semaphore_signal函数加1了，且该函数（即dispatch_semaphore_wait）所处线程获得了信号量，那么就继续向下执行并将信号量减1。如果等待期间没有获取到信号量或者信号量的值一直为0，那么等到timeout时，其所处线程自动执行其后语句。</div><div class="line"></div><div class="line">dispatch_semaphore 是信号量，但当信号总量设为 1 时也可以当作锁来。在没有等待情况出现时，它的性能比 pthread_mutex 还要高，但一旦有等待情况出现时，性能就会下降许多。相对于 OSSpinLock 来说，它的优势在于等待时不会消耗 CPU 资源。</div><div class="line"></div><div class="line">如上的代码，如果超时时间overTime设置成&gt;2，可完成同步操作。如果overTime&lt;2的话，在线程1还没有执行完成的情况下，此时超时了，将自动执行下面的代码。</div><div class="line"></div><div class="line">上面代码的执行结果为：</div></pre></td></tr></table></figure>
+<p>2016-06-29 20:47:52.324 SafeMultiThread[35945:579032] 需要线程同步的操作1 开始<br>2016-06-29 20:47:55.325 SafeMultiThread[35945:579032] 需要线程同步的操作1 结束<br>2016-06-29 20:47:55.326 SafeMultiThread[35945:579033] 需要线程同步的操作2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果把超时时间设置为&lt;2s的时候，执行的结果就是：</div></pre></td></tr></table></figure></p>
+<p>2016-06-30 18:53:24.049 SafeMultiThread[30834:434334] 需要线程同步的操作1 开始<br>2016-06-30 18:53:25.554 SafeMultiThread[30834:434332] 需要线程同步的操作2<br>2016-06-30 18:53:26.054 SafeMultiThread[30834:434334] 需要线程同步的操作1 结束<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure></p>
+<p>dispatch_semaphore_create(long value);</p>
+<p>dispatch_semaphore_wait(dispatch_semaphore_t dsema, dispatch_time_t timeout);</p>
+<p>dispatch_semaphore_signal(dispatch_semaphore_t dsema);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">dispatch_semaphore 是 GCD 用来同步的一种方式，与他相关的只有三个函数，一个是创建信号量，一个是等待信号，一个是发送信号。</div></pre></td></tr></table></figure></p>
+<pre><code>dispatch_semaphore_t signal = dispatch_semaphore_create(1);
+dispatch_time_t overTime = dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC);
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_semaphore_wait(signal, overTime);
+    sleep(2);
+    NSLog(@&quot;线程1&quot;);
+    dispatch_semaphore_signal(signal);
+});
+
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);
+    dispatch_semaphore_wait(signal, overTime);
+    NSLog(@&quot;线程2&quot;);
+    dispatch_semaphore_signal(signal);
+});
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">dispatch_semaphore 和 NSCondition 类似，都是一种基于信号的同步方式，但 NSCondition 信号只能发送，不能保存（如果没有线程在等待，则发送的信号会失效）。而 dispatch_semaphore 能保存发送的信号。dispatch_semaphore 的核心是 dispatch_semaphore_t 类型的信号量。</div><div class="line"></div><div class="line">dispatch_semaphore_create(1) 方法可以创建一个 dispatch_semaphore_t 类型的信号量，设定信号量的初始值为 1。注意，这里的传入的参数必须大于或等于 0，否则 dispatch_semaphore_create 会返回 NULL。</div><div class="line"></div><div class="line">dispatch_semaphore_wait(signal, overTime); 方法会判断 signal 的信号值是否大于 0。大于 0 不会阻塞线程，消耗掉一个信号，执行后续任务。如果信号值为 0，该线程会和 NSCondition 一样直接进入 waiting 状态，等待其他线程发送信号唤醒线程去执行后续任务，或者当 overTime  时限到了，也会执行后续任务。</div><div class="line"></div><div class="line">dispatch_semaphore_signal(signal); 发送信号，如果没有等待的线程接受信号，则使 signal 信号值加一（做到对信号的保存）。</div><div class="line"></div><div class="line">从上面的实例代码可以看到，一个 dispatch_semaphore_wait(signal, overTime); 方法会去对应一个 dispatch_semaphore_signal(signal); 看起来像 NSLock 的 lock 和 unlock，其实可以这样理解，区别只在于有信号量这个参数，lock unlock 只能同一时间，一个线程访问被保护的临界区，而如果 dispatch_semaphore 的信号量初始值为 x ，则可以有 x 个线程同时访问被保护的临界区。</div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line"></div><div class="line">之前我在 [介绍 GCD 底层实现的文章](https://bestswifter.com) 中简单描述了信号量 `dispatch_semaphore_t` 的实现原理，它最终会调用到 `sem_wait` 方法，这个方法在 glibc 中被实现如下:</div></pre></td></tr></table></figure>
+<p>int sem_wait (sem_t <em>sem) {<br>  int </em>futex = (int *) sem;<br>  if (atomic_decrement_if_positive (futex) &gt; 0)<br>    return 0;<br>  int err = lll_futex_wait (futex, 0);<br>    return -1;<br>)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">首先会把信号量的值减一，并判断是否大于零。如果大于零，说明不用等待，所以立刻返回。具体的等待操作在 lll_futex_wait 函数中实现，lll 是 low level lock 的简称。这个函数通过汇编代码实现，调用到 SYS_futex 这个系统调用，使线程进入睡眠状态，主动让出时间片，这个函数在互斥锁的实现中，也有可能被用到。</div><div class="line"></div><div class="line">主动让出时间片并不总是代表效率高。让出时间片会导致操作系统切换到另一个线程，这种上下文切换通常需要 10 微秒左右，而且至少需要两次切换。如果等待时间很短，比如只有几个微秒，忙等就比线程睡眠更高效。</div><div class="line"></div><div class="line">可以看到，自旋锁和信号量的实现都非常简单，这也是两者的加解锁耗时分别排在第一和第二的原因。再次强调，加解锁耗时不能准确反应出锁的效率(比如时间片切换就无法发生)，它只能从一定程度上衡量锁的实现复杂程度。</div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line"></div><div class="line">### 3. NSLock</div></pre></td></tr></table></figure></p>
+<p>NSLock *lock = [[NSLock alloc] init];<br>    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{<br>        //[lock lock];<br>        [lock lockBeforeDate:[NSDate date]];<br>            NSLog(@”需要线程同步的操作1 开始”);<br>            sleep(2);<br>            NSLog(@”需要线程同步的操作1 结束”);<br>        [lock unlock];</p>
+<pre><code>});
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);
+    if ([lock tryLock]) {//尝试获取锁，如果获取不到返回NO，不会阻塞该线程
+        NSLog(@&quot;锁可用的操作&quot;);
+        [lock unlock];
+    }else{
+        NSLog(@&quot;锁不可用的操作&quot;);
+    }
+
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:3];
+    if ([lock lockBeforeDate:date]) {//尝试在未来的3s内获取锁，并阻塞该线程，如果3s内获取不到恢复线程, 返回NO,不会阻塞该线程
+        NSLog(@&quot;没有超时，获得锁&quot;);
+        [lock unlock];
+    }else{
+        NSLog(@&quot;超时，没有获得锁&quot;);
+    }
+
+});
+</code></pre><p>//上面代码的执行结果为：<br>2016-06-29 20:45:08.864 SafeMultiThread[35911:575795] 需要线程同步的操作1 开始<br>2016-06-29 20:45:09.869 SafeMultiThread[35911:575781] 锁不可用的操作<br>2016-06-29 20:45:10.869 SafeMultiThread[35911:575795] 需要线程同步的操作1 结束<br>2016-06-29 20:45:10.870 SafeMultiThread[35911:575781] 没有超时，获得锁<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">NSLock是Cocoa提供给我们最基本的锁对象，这也是我们经常所使用的，除lock和unlock方法外，NSLock还提供了tryLock和lockBeforeDate:两个方法，前一个方法会尝试加锁，如果锁不可用(已经被锁住)，刚并不会阻塞线程，并返回NO。lockBeforeDate:方法会在所指定Date之前尝试加锁，如果在指定时间之前都不能加锁，则返回NO。</div><div class="line"></div><div class="line">源码定义如下：</div></pre></td></tr></table></figure></p>
+<p>@protocol NSLocking</p>
+<ul>
+<li>(void)lock;</li>
+<li>(void)unlock;</li>
+</ul>
+<p>@end</p>
+<p>@interface NSLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure></p>
+<p>@protocol NSLocking</p>
+<ul>
+<li>(void)lock;</li>
+<li>(void)unlock;</li>
+</ul>
+<p>@end</p>
+<p>@interface NSLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">NSLock 遵循 NSLocking 协议，lock 方法是加锁，unlock 是解锁，tryLock 是尝试加锁，如果失败的话返回 NO，lockBeforeDate: 是在指定Date之前尝试加锁，如果在指定时间之前都不能加锁，则返回NO。</div><div class="line"></div><div class="line">举个🌰</div></pre></td></tr></table></figure></p>
+<pre><code>//主线程中
+NSLock *lock = [[NSLock alloc] init];
+
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [lock lock];
+    NSLog(@&quot;线程1&quot;);
+    sleep(2);
+    [lock unlock];
+    NSLog(@&quot;线程1解锁成功&quot;);
+});
+
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);//以保证让线程2的代码后执行
+    [lock lock];
+    NSLog(@&quot;线程2&quot;);
+    [lock unlock];
+});
+</code></pre><p>2016-08-19 14:23:09.659 ThreadLockControlDemo[1754:129663] 线程1<br>2016-08-19 14:23:11.663 ThreadLockControlDemo[1754:129663] 线程1解锁成功<br>2016-08-19 14:23:11.665 ThreadLockControlDemo[1754:129659] 线程2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">线程 1 中的 lock 锁上了，所以线程 2 中的 lock 加锁失败，阻塞线程 2，但 2 s 后线程 1 中的 lock 解锁，线程 2 就立即加锁成功，执行线程 2 中的后续代码。</div><div class="line"></div><div class="line">查到的资料显示互斥锁会使得线程阻塞，阻塞的过程又分两个阶段，第一阶段是会先空转，可以理解成跑一个 while 循环，不断地去申请加锁，在空转一定时间之后，线程会进入 waiting 状态，此时线程就不占用CPU资源了，等锁可用的时候，这个线程会立即被唤醒。</div><div class="line"></div><div class="line">所以如果将上面线程 1 中的 sleep(2); 改成 sleep(10); 输出的结果会变成</div></pre></td></tr></table></figure></p>
+<p>2016-08-19 14:25:16.226 ThreadLockControlDemo[1773:131824] 线程1<br>2016-08-19 14:25:26.231 ThreadLockControlDemo[1773:131831] 线程2<br>2016-08-19 14:25:26.231 ThreadLockControlDemo[1773:131824] 线程1解锁成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">从上面的两个输出结果可以看出，线程 2 lock 的第一秒，是一直在轮询请求加锁的，因为轮询有时间间隔，所以 ”线程 2“ 的输出晚于 ”线程 1 解锁成功“，但线程 2 lock 的第九秒，是当锁可用的时候，立即被唤醒，所以 ”线程 2“ 的输出早于 ”线程 1 解锁成功“。多做了几次试验，发现轮询 1 秒之后，线程会进入 waiting 状态。</div></pre></td></tr></table></figure></p>
+<p> //主线程中<br>    NSLock *lock = [[NSLock alloc] init];</p>
+<pre><code>//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [lock lock];
+    NSLog(@&quot;线程1&quot;);
+    sleep(10);
+    [lock unlock];
+});
+
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);//以保证让线程2的代码后执行
+    if ([lock tryLock]) {
+        NSLog(@&quot;线程2&quot;);
+        [lock unlock];
+    } else {
+        NSLog(@&quot;尝试加锁失败&quot;);
+    }
+});
+</code></pre><p>2016-08-19 11:42:54.433 ThreadLockControlDemo[1256:56857] 线程1<br>2016-08-19 11:42:55.434 ThreadLockControlDemo[1256:56861] 尝试加锁失败<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">由上面的结果可得知，tryLock 并不会阻塞线程。[lock tryLock] 能加锁返回 YES，不能加锁返回 NO，然后都会执行后续代码。</div><div class="line"></div><div class="line">如果将 [lock tryLock] 替换成</div><div class="line"></div><div class="line">[lock lockBeforeDate:[NSDate dateWithTimeIntervalSinceNow:10]</div><div class="line"></div><div class="line">的话，则会返回 YES，输出 “线程 2“，lockBeforeDate: 方法会在所指定 Date 之前尝试加锁，会阻塞线程，如果在指定时间之前都不能加锁，则返回 NO，指定时间之前能加锁，则返回 YES。</div><div class="line"></div><div class="line">至于 _priv 和 name，我监测了各个阶段他们的值，_priv 一直都是 NULL。也不知道有什么用，name 是用来标识用的，用来输出 error log 时候作为 lock 的名称。比如解锁状态再解锁，会输出一个 error log。</div></pre></td></tr></table></figure></p>
+<p><em>*</em> -[NSLock unlock]: lock (<nslock: 0x7a4bdeb0=""> ‘lockName’) unlocked when not locked<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果是三个线程，那么一个线程在加锁的时候，其余请求锁的线程将形成一个等待队列，按先进先出原则，这个结果可以通过修改线程优先级进行测试得出。</div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line"></div><div class="line">NSLock 是 Objective-C 以对象的形式暴露给开发者的一种锁，它的实现非常简单，通过宏，定义了 `lock` 方法:</div></pre></td></tr></table></figure></nslock:></p>
+<p>#define    MLOCK \</p>
+<ul>
+<li>(void) lock\<br>{\<br>int err = pthread_mutex_lock(&amp;_mutex);\<br>// 错误处理 ……<br>}<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">`NSLock` 只是在内部封装了一个 `pthread_mutex`，属性为 `PTHREAD_MUTEX_ERRORCHECK`，它会损失一定性能换来错误提示。</div><div class="line">这里使用宏定义的原因是，OC 内部还有其他几种锁，他们的 lock 方法都是一模一样，仅仅是内部 `pthread_mutex` 互斥锁的类型不同。通过宏定义，可以简化方法的定义。</div><div class="line">`NSLock` 比 `pthread_mutex` 略慢的原因在于它需要经过方法调用，同时由于缓存的存在，多次方法调用不会对性能产生太大的影响。</div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line"></div><div class="line">### 4. NSRecursiveLock递归锁</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>//NSLock <em>lock = [[NSLock alloc] init];<br>    NSRecursiveLock </em>lock = [[NSRecursiveLock alloc] init];</p>
+<pre><code>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+    static void (^RecursiveMethod)(int);
+
+    RecursiveMethod = ^(int value) {
+
+        [lock lock];
+        if (value &gt; 0) {
+
+            NSLog(@&quot;value = %d&quot;, value);
+            sleep(1);
+            RecursiveMethod(value - 1);
+        }
+        [lock unlock];
+    };
+
+    RecursiveMethod(5);
+});
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">NSRecursiveLock实际上定义的是一个递归锁，这个锁可以被同一线程多次请求，而不会引起死锁。这主要是用在循环或递归操作中。</div><div class="line">这段代码是一个典型的死锁情况。在我们的线程中，RecursiveMethod是递归调用的。所以每次进入这个block时，都会去加一次锁，而从第二次开始，由于锁已经被使用了且没有解锁，所以它需要等待锁被解除，这样就导致了死锁，线程被阻塞住了。调试器中会输出如下信息：</div></pre></td></tr></table></figure>
+<p>2016-06-30 19:08:06.393 SafeMultiThread[30928:449008] value = 5<br>2016-06-30 19:08:07.399 SafeMultiThread[30928:449008] <strong><em> -[NSLock lock]: deadlock (<nslock: 0x7fd811d28810=""> ‘(null)’)<br>2016-06-30 19:08:07.399 SafeMultiThread[30928:449008] </nslock:></em></strong> Break on _NSLockError() to debug.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">在这种情况下，我们就可以使用NSRecursiveLock。它可以允许同一线程多次加锁，而不会造成死锁。递归锁会跟踪它被lock的次数。每次成功的lock都必须平衡调用unlock操作。只有所有达到这种平衡，锁最后才能被释放，以供其它线程使用。</div><div class="line"></div><div class="line">如果我们将NSLock代替为NSRecursiveLock，上面代码则会正确执行。</div></pre></td></tr></table></figure></p>
+<p>2016-06-30 19:09:41.414 SafeMultiThread[30949:450684] value = 5<br>2016-06-30 19:09:42.418 SafeMultiThread[30949:450684] value = 4<br>2016-06-30 19:09:43.419 SafeMultiThread[30949:450684] value = 3<br>2016-06-30 19:09:44.424 SafeMultiThread[30949:450684] value = 2<br>2016-06-30 19:09:45.426 SafeMultiThread[30949:450684] value = 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果需要其他功能，源码定义如下：</div></pre></td></tr></table></figure></p>
+<p>@interface NSRecursiveLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure></p>
+<p>@interface NSRecursiveLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">NSRecursiveLock 是递归锁，他和 NSLock 的区别在于，NSRecursiveLock 可以在一个线程中重复加锁（反正单线程内任务是按顺序执行的，不会出现资源竞争问题），NSRecursiveLock 会记录上锁和解锁的次数，当二者平衡的时候，才会释放锁，其它线程才可以上锁成功。</div></pre></td></tr></table></figure></p>
+<p>NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];</p>
+<pre><code>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+    static void (^RecursiveBlock)(int);
+    RecursiveBlock = ^(int value) {
+        [lock lock];
+        if (value &gt; 0) {
+            NSLog(@&quot;value:%d&quot;, value);
+            RecursiveBlock(value - 1);
+        }
+        [lock unlock];
+    };
+    RecursiveBlock(2);
+});
+</code></pre><p>2016-08-19 14:43:12.327 ThreadLockControlDemo[1878:145003] value:2<br>2016-08-19 14:43:12.327 ThreadLockControlDemo[1878:145003] value:1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如上面的示例，如果用 NSLock 的话，lock 先锁上了，但未执行解锁的时候，就会进入递归的下一层，而再次请求上锁，阻塞了该线程，线程被阻塞了，自然后面的解锁代码不会执行，而形成了死锁。而 NSRecursiveLock 递归锁就是为了解决这个问题。</div><div class="line"></div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line">上文已经说过，递归锁也是通过 `pthread_mutex_lock` 函数来实现，在函数内部会判断锁的类型，如果显示是递归锁，就允许递归调用，仅仅将一个计数器加一，锁的释放过程也是同理。</div><div class="line">`NSRecursiveLock` 与 `NSLock` 的区别在于内部封装的 `pthread_mutex_t` 对象的类型不同，前者的类型为 `PTHREAD_MUTEX_RECURSIVE`。 </div><div class="line"></div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line">### 5. NSConditionLock条件锁</div></pre></td></tr></table></figure></p>
+<p>NSMutableArray *products = [NSMutableArray array];</p>
+<pre><code>NSInteger HAS_DATA = 1;
+NSInteger NO_DATA = 0;
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    while (1) {
+        [lock lockWhenCondition:NO_DATA];
+        [products addObject:[[NSObject alloc] init]];
+        NSLog(@&quot;produce a product,总量:%zi&quot;,products.count);
+        [lock unlockWithCondition:HAS_DATA];
+        sleep(1);
+    }
+
+});
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    while (1) {
+        NSLog(@&quot;wait for product&quot;);
+        [lock lockWhenCondition:HAS_DATA];
+        [products removeObjectAtIndex:0];
+        NSLog(@&quot;custome a product&quot;);
+        [lock unlockWithCondition:NO_DATA];
+    }
+
+});
+</code></pre><p>// 上面代码执行结果如下：<br>2016-06-30 20:31:58.699 SafeMultiThread[31282:521698] wait for product<br>2016-06-30 20:31:58.699 SafeMultiThread[31282:521708] produce a product,总量:1<br>2016-06-30 20:31:58.700 SafeMultiThread[31282:521698] custome a product<br>2016-06-30 20:31:58.700 SafeMultiThread[31282:521698] wait for product<br>2016-06-30 20:31:59.705 SafeMultiThread[31282:521708] produce a product,总量:1<br>2016-06-30 20:31:59.706 SafeMultiThread[31282:521698] custome a product<br>2016-06-30 20:31:59.706 SafeMultiThread[31282:521698] wait for product<br>2016-06-30 20:32:00.707 SafeMultiThread[31282:521708] produce a product,总量:1<br>2016-06-30 20:32:00.708 SafeMultiThread[31282:521698] custome a product<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">当我们在使用多线程的时候，有时一把只会lock和unlock的锁未必就能完全满足我们的使用。因为普通的锁只能关心锁与不锁，而不在乎用什么钥匙才能开锁，而我们在处理资源共享的时候，多数情况是只有满足一定条件的情况下才能打开这把锁：</div><div class="line"></div><div class="line">在线程1中的加锁使用了lock，所以是不需要条件的，所以顺利的就锁住了，但在unlock的使用了一个整型的条件，它可以开启其它线程中正在等待这把钥匙的临界地，而线程2则需要一把被标识为2的钥匙，所以当线程1循环到最后一次的时候，才最终打开了线程2中的阻塞。但即便如此，NSConditionLock也跟其它的锁一样，是需要lock与unlock对应的，只是lock,lockWhenCondition:与unlock，unlockWithCondition:是可以随意组合的，当然这是与你的需求相关的。</div><div class="line"></div><div class="line">如果你需要其他功能，源码定义如下：</div></pre></td></tr></table></figure></p>
+<p>@interface NSConditionLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(instancetype)initWithCondition:(NSInteger)condition NS_DESIGNATED_INITIALIZER;</li>
+</ul>
+<p>@property (readonly) NSInteger condition;</p>
+<ul>
+<li>(void)lockWhenCondition:(NSInteger)condition;</li>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)tryLockWhenCondition:(NSInteger)condition;</li>
+<li>(void)unlockWithCondition:(NSInteger)condition;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+<li>(BOOL)lockWhenCondition:(NSInteger)condition beforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure></p>
+<p>@interface NSConditionLock : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(instancetype)initWithCondition:(NSInteger)condition NS_DESIGNATED_INITIALIZER;</li>
+</ul>
+<p>@property (readonly) NSInteger condition;</p>
+<ul>
+<li>(void)lockWhenCondition:(NSInteger)condition;</li>
+<li>(BOOL)tryLock;</li>
+<li>(BOOL)tryLockWhenCondition:(NSInteger)condition;</li>
+<li>(void)unlockWithCondition:(NSInteger)condition;</li>
+<li>(BOOL)lockBeforeDate:(NSDate *)limit;</li>
+<li>(BOOL)lockWhenCondition:(NSInteger)condition beforeDate:(NSDate *)limit;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">NSConditionLock 和 NSLock 类似，都遵循 NSLocking 协议，方法都类似，只是多了一个 condition 属性，以及每个操作都多了一个关于 condition 属性的方法，例如 tryLock，tryLockWhenCondition:，NSConditionLock 可以称为条件锁，只有 condition 参数与初始化时候的 condition 相等，lock 才能正确进行加锁操作。而 unlockWithCondition: 并不是当 Condition 符合条件时才解锁，而是解锁之后，修改 Condition 的值，这个结论可以从下面的例子中得出。</div></pre></td></tr></table></figure></p>
+<pre><code>//主线程中
+NSConditionLock *lock = [[NSConditionLock alloc] initWithCondition:0];
+
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [lock lockWhenCondition:1];
+    NSLog(@&quot;线程1&quot;);
+    sleep(2);
+    [lock unlock];
+});
+
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);//以保证让线程2的代码后执行
+    if ([lock tryLockWhenCondition:0]) {
+        NSLog(@&quot;线程2&quot;);
+        [lock unlockWithCondition:2];
+        NSLog(@&quot;线程2解锁成功&quot;);
+    } else {
+        NSLog(@&quot;线程2尝试加锁失败&quot;);
+    }
+});
+
+//线程3
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(2);//以保证让线程2的代码后执行
+    if ([lock tryLockWhenCondition:2]) {
+        NSLog(@&quot;线程3&quot;);
+        [lock unlock];
+        NSLog(@&quot;线程3解锁成功&quot;);
+    } else {
+        NSLog(@&quot;线程3尝试加锁失败&quot;);
+    }
+});
+
+//线程4
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(3);//以保证让线程2的代码后执行
+    if ([lock tryLockWhenCondition:2]) {
+        NSLog(@&quot;线程4&quot;);
+        [lock unlockWithCondition:1];    
+        NSLog(@&quot;线程4解锁成功&quot;);
+    } else {
+        NSLog(@&quot;线程4尝试加锁失败&quot;);
+    }
+});
+</code></pre><p>2016-08-19 13:51:15.353 ThreadLockControlDemo[1614:110697] 线程2<br>2016-08-19 13:51:15.354 ThreadLockControlDemo[1614:110697] 线程2解锁成功<br>2016-08-19 13:51:16.353 ThreadLockControlDemo[1614:110689] 线程3<br>2016-08-19 13:51:16.353 ThreadLockControlDemo[1614:110689] 线程3解锁成功<br>2016-08-19 13:51:17.354 ThreadLockControlDemo[1614:110884] 线程4<br>2016-08-19 13:51:17.355 ThreadLockControlDemo[1614:110884] 线程4解锁成功<br>2016-08-19 13:51:17.355 ThreadLockControlDemo[1614:110884] 线程1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">上面代码先输出了 ”线程 2“，因为线程 1 的加锁条件不满足，初始化时候的 condition 参数为 0，而加锁条件是 condition 为 1，所以加锁失败。locakWhenCondition 与 lock 方法类似，加锁失败会阻塞线程，所以线程 1 会被阻塞着，而 tryLockWhenCondition 方法就算条件不满足，也会返回 NO，不会阻塞当前线程。</div><div class="line"></div><div class="line">回到上面的代码，线程 2 执行了 [lock unlockWithCondition:2]; 所以 Condition 被修改成了 2。</div><div class="line"></div><div class="line">而线程 3 的加锁条件是 Condition 为 2， 所以线程 3 才能加锁成功，线程 3 执行了 [lock unlock]; 解锁成功且不改变 Condition 值。</div><div class="line"></div><div class="line">线程 4 的条件也是 2，所以也加锁成功，解锁时将 Condition 改成 1。这个时候线程 1 终于可以加锁成功，解除了阻塞。</div><div class="line"></div><div class="line">从上面可以得出，NSConditionLock 还可以实现任务之间的依赖。</div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line">`NSConditionLock` 借助 `NSCondition` 来实现，它的本质就是一个生产者-消费者模型。“条件被满足”可以理解为生产者提供了新的内容。`NSConditionLock` 的内部持有一个 `NSCondition` 对象，以及 `_condition_value` 属性，在初始化时就会对这个属性进行赋值:</div></pre></td></tr></table></figure></p>
+<p>// 简化版代码</p>
+<ul>
+<li><p>(id) initWithCondition: (NSInteger)value {<br>  if (nil != (self = [super init])) {</p>
+<pre><code>_condition = [NSCondition new]
+_condition_value = value;
+</code></pre><p>  }<br>  return self;<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">它的 `lockWhenCondition` 方法其实就是消费者方法:</div></pre></td></tr></table></figure>
+</li>
+<li><p>(void) lockWhenCondition: (NSInteger)value {<br>  [_condition lock];<br>  while (value != _condition_value) {</p>
+<pre><code>[_condition wait];
+</code></pre><p>  }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">对应的 `unlockWhenCondition` 方法则是生产者，使用了 `broadcast` 方法通知了所有的消费者:</div></pre></td></tr></table></figure>
+</li>
+<li><p>(void) unlockWithCondition: (NSInteger)value {<br>  _condition_value = value;<br>  [_condition broadcast];<br>  [_condition unlock];<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line"></div><div class="line">### 6. NSCondition</div></pre></td></tr></table></figure>
+<p>  NSCondition *condition = [[NSCondition alloc] init];</p>
+<p>  NSMutableArray *products = [NSMutableArray array];</p>
+<p>  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{</p>
+<pre><code>while (1) {
+    [condition lock];
+    if ([products count] == 0) {
+        NSLog(@&quot;wait for product&quot;);
+        [condition wait];
+    }
+    [products removeObjectAtIndex:0];
+    NSLog(@&quot;custome a product&quot;);
+    [condition unlock];
+}
+</code></pre><p>  });</p>
+<p>  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{</p>
+<pre><code>while (1) {
+    [condition lock];
+    [products addObject:[[NSObject alloc] init]];
+    NSLog(@&quot;produce a product,总量:%zi&quot;,products.count);
+    [condition signal];
+    [condition unlock];
+    sleep(1);
+}
+</code></pre><p>  });</p>
+</li>
+</ul>
+<p>// 上面代码执行结果如下：<br>2016-06-30 20:21:25.295 SafeMultiThread[31256:513991] wait for product<br>2016-06-30 20:21:25.296 SafeMultiThread[31256:513994] produce a product,总量:1<br>2016-06-30 20:21:25.296 SafeMultiThread[31256:513991] custome a product<br>2016-06-30 20:21:25.297 SafeMultiThread[31256:513991] wait for product<br>2016-06-30 20:21:26.302 SafeMultiThread[31256:513994] produce a product,总量:1<br>2016-06-30 20:21:26.302 SafeMultiThread[31256:513991] custome a product<br>2016-06-30 20:21:26.302 SafeMultiThread[31256:513991] wait for product<br>2016-06-30 20:21:27.307 SafeMultiThread[31256:513994] produce a product,总量:1<br>2016-06-30 20:21:27.308 SafeMultiThread[31256:513991] custome a product<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">一种最基本的条件锁。手动控制线程wait和signal。</div><div class="line"></div><div class="line">[condition lock];一般用于多线程同时访问、修改同一个数据源，保证在同一时间内数据源只被访问、修改一次，其他线程的命令需要在lock 外等待，只到unlock ，才可访问</div><div class="line"></div><div class="line">[condition unlock];与lock 同时使用</div><div class="line"></div><div class="line">[condition wait];让当前线程处于等待状态</div><div class="line"></div><div class="line">[condition signal];CPU发信号告诉线程不用在等待，可以继续执行</div><div class="line"></div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure></p>
+<p>@interface NSCondition : NSObject <nslocking> {<br>@private<br>    void *_priv;<br>}</nslocking></p>
+<ul>
+<li>(void)wait;</li>
+<li>(BOOL)waitUntilDate:(NSDate *)limit;</li>
+<li>(void)signal;</li>
+<li>(void)broadcast;</li>
+</ul>
+<p>@property (nullable, copy) NSString *name NS_AVAILABLE(10_5, 2_0);</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">NSCondition 的对象实际上作为一个锁和一个线程检查器，锁上之后其它线程也能上锁，而之后可以根据条件决定是否继续运行线程，即线程是否要进入 waiting 状态，经测试，NSCondition 并不会像上文的那些锁一样，先轮询，而是直接进入 waiting 状态，当其它线程中的该锁执行 signal 或者 broadcast 方法时，线程被唤醒，继续运行之后的方法。</div><div class="line"></div><div class="line">用法如下：</div></pre></td></tr></table></figure></p>
+<pre><code>NSCondition *lock = [[NSCondition alloc] init];
+NSMutableArray *array = [[NSMutableArray alloc] init];
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [lock lock];
+    while (!array.count) {
+        [lock wait];
+    }
+    [array removeAllObjects];
+    NSLog(@&quot;array removeAllObjects&quot;);
+    [lock unlock];
+});
+
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);//以保证让线程2的代码后执行
+    [lock lock];
+    [array addObject:@1];
+    NSLog(@&quot;array addObject:@1&quot;);
+    [lock signal];
+    [lock unlock];
+});
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">也就是使用 NSCondition 的模型为：</div><div class="line"></div><div class="line">锁定条件对象。</div><div class="line"></div><div class="line">测试是否可以安全的履行接下来的任务。</div><div class="line"></div><div class="line">如果布尔值是假的，调用条件对象的 wait 或 waitUntilDate: 方法来阻塞线程。 在从这些方法返回，则转到步骤 2 重新测试你的布尔值。 （继续等待信号和重新测试，直到可以安全的履行接下来的任务。waitUntilDate: 方法有个等待时间限制，指定的时间到了，则放回 NO，继续运行接下来的任务）</div><div class="line"></div><div class="line">如果布尔值为真，执行接下来的任务。</div><div class="line"></div><div class="line">当任务完成后，解锁条件对象。</div><div class="line"></div><div class="line">而步骤 3 说的等待的信号，既线程 2 执行 [lock signal] 发送的信号。</div><div class="line"></div><div class="line">其中 signal 和 broadcast 方法的区别在于，signal 只是一个信号量，只能唤醒一个等待的线程，想唤醒多个就得多次调用，而 broadcast 可以唤醒所有在等待的线程。如果没有等待的线程，这两个方法都没有作用。</div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line">`NSCondition` 的底层是通过条件变量(condition variable) `pthread_cond_t` 来实现的。条件变量有点像信号量，提供了线程阻塞与信号机制，因此可以用来阻塞某个线程，并等待某个数据就绪，随后唤醒线程，比如常见的生产者-消费者模式。</div><div class="line">如何使用条件变量</div><div class="line"></div><div class="line">很多介绍  pthread_cond_t 的文章都会提到，它需要与互斥锁配合使用:</div><div class="line"></div><div class="line">**如何使用条件变量**</div><div class="line"></div><div class="line">很多介绍  `pthread_cond_t` 的文章都会提到，它需要与互斥锁配合使用:</div></pre></td></tr></table></figure>
+<p>void consumer () { // 消费者<br>    pthread_mutex_lock(&amp;mutex);<br>    while (data == NULL) {<br>        pthread_cond_wait(&amp;condition_variable_signal, &amp;mutex); // 等待数据<br>    }<br>    // — 有新的数据，以下代码负责处理 ↓↓↓↓↓↓<br>    // temp = data;<br>    // — 有新的数据，以上代码负责处理 ↑↑↑↑↑↑<br>    pthread_mutex_unlock(&amp;mutex);<br>}</p>
+<p>void producer () {<br>    pthread_mutex_lock(&amp;mutex);<br>    // 生产数据<br>    pthread_cond_signal(&amp;condition_variable_signal); // 发出信号给消费者，告诉他们有了新的数据<br>    pthread_mutex_unlock(&amp;mutex);<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">自然我们会有疑问:“如果不用互斥锁，只用条件变量会有什么问题呢？”。问题在于，`temp = data;` 这段代码不是线程安全的，也许在你把 data 读出来以前，已经有别的线程修改了数据。因此我们需要保证消费者拿到的数据是线程安全的。</div><div class="line"></div><div class="line">wait 方法除了会被 signal 方法唤醒，有时还会被虚假唤醒，所以需要这里 while 循环中的判断来做二次确认。</div><div class="line"></div><div class="line">**为什么要使用条件变量**</div><div class="line"></div><div class="line">介绍条件变量的文章非常多，但大多都对一个一个基本问题避而不谈:“为什么要用条件变量？它仅仅是控制了线程的执行顺序，用信号量或者互斥锁能不能模拟出类似效果？”</div><div class="line"></div><div class="line">网上的相关资料比较少，我简单说一下个人看法。信号量可以一定程度上替代 condition，但是互斥锁不行。在以上给出的生产者-消费者模式的代码中， `pthread_cond_wait` 方法的本质是锁的转移，消费者放弃锁，然后生产者获得锁，同理，`pthread_cond_signal` 则是一个锁从生产者到消费者转移的过程。</div><div class="line"></div><div class="line">如果使用互斥锁，我们需要把代码改成这样:</div></pre></td></tr></table></figure></p>
+<p>void consumer () { // 消费者<br>    pthread_mutex_lock(&amp;mutex);<br>    while (data == NULL) {<br>        pthread_mutex_unlock(&amp;mutex);<br>        pthread_mutex_lock(&amp;another_lock)  // 相当于 wait 另一个互斥锁<br>        pthread_mutex_lock(&amp;mutex);<br>    }<br>    pthread_mutex_unlock(&amp;mutex);<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这样做存在的问题在于，在等待 anotherlock 之前， 生产者有可能先执行代码， 从而释放了 anotherlock。也就是说，我们无法保证释放锁和等待另一个锁这两个操作是原子性的，也就无法保证“先等待、后释放 another_lock” 这个顺序。</div><div class="line"></div><div class="line">用信号量则不存在这个问题，因为信号量的等待和唤醒并不需要满足先后顺序，信号量只表示有多少个资源可用，因此不存在上述问题。然而与 `pthread_cond_wait` 保证的原子性锁转移相比，使用信号量似乎存在一定风险(暂时没有查到非原子性操作有何不妥)。</div><div class="line"></div><div class="line">不过，使用 condition 有一个好处，我们可以调用 `pthread_cond_broadcast` 方法通知所有等待中的消费者，这是使用信号量无法实现的。</div><div class="line"></div><div class="line">**NSCondition 的做法**</div><div class="line"></div><div class="line">`NSCondition` 其实是封装了一个互斥锁和条件变量， 它把前者的 `lock` 方法和后者的 `wait/signal` 统一在 `NSCondition` 对象中，暴露给使用者:</div></pre></td></tr></table></figure></p>
+<ul>
+<li>(void) signal {<br>pthread_cond_signal(&amp;_condition);<br>}</li>
+</ul>
+<p>// 其实这个函数是通过宏来定义的，展开后就是这样</p>
+<ul>
+<li><p>(void) lock {<br>int err = pthread_mutex_lock(&amp;_mutex);<br>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">它的加解锁过程与 `NSLock` 几乎一致，理论上来说耗时也应该一样(实际测试也是如此)。在图中显示它耗时略长，我猜测有可能是测试者在每次加解锁的前后还附带了变量的初始化和销毁操作。</div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line"></div><div class="line">### 7. pthread_mutex</div></pre></td></tr></table></figure>
+<p>  __block pthread_mutex_t theLock;<br>  pthread_mutex_init(&amp;theLock, NULL);</p>
+<p>  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{</p>
+<pre><code>pthread_mutex_lock(&amp;theLock);
+NSLog(@&quot;需要线程同步的操作1 开始&quot;);
+sleep(3);
+NSLog(@&quot;需要线程同步的操作1 结束&quot;);
+pthread_mutex_unlock(&amp;theLock);
+</code></pre><p>  });</p>
+<p>  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{</p>
+<pre><code>sleep(1);
+pthread_mutex_lock(&amp;theLock);
+NSLog(@&quot;需要线程同步的操作2&quot;);
+pthread_mutex_unlock(&amp;theLock);
+</code></pre><p>  });</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">c语言定义下多线程加锁方式。</div><div class="line"></div><div class="line"></div><div class="line">1：pthread_mutex_init(pthread_mutex_t * mutex,const pthread_mutexattr_t attr);</div><div class="line"></div><div class="line">初始化锁变量mutex。attr为锁属性，NULL值为默认属性。</div><div class="line"></div><div class="line">2：pthread_mutex_lock(pthread_mutex_t* mutex);加锁</div><div class="line"></div><div class="line">3：pthread_mutex_tylock(pthread_mutex_t* mutex);加锁，但是与2不一样的是当锁已经在使用的时候，返回为EBUSY，而不是挂起等待。</div><div class="line"></div><div class="line">4：pthread_mutex_unlock(pthread_mutex_t* mutex);释放锁</div><div class="line"></div><div class="line">5：pthread_mutex_destroy(pthread_mutex_t* *mutex);使用完后释放</div><div class="line"></div><div class="line">代码执行操作结果如下：</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>2016-06-30 21:13:32.440 SafeMultiThread[31429:548869] 需要线程同步的操作1 开始<br>2016-06-30 21:13:35.445 SafeMultiThread[31429:548869] 需要线程同步的操作1 结束<br>2016-06-30 21:13:35.446 SafeMultiThread[31429:548866] 需要线程同步的操作2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 8. pthread_mutex(recursive)</div></pre></td></tr></table></figure></p>
+<p>__block pthread_mutex_t theLock;<br>    //pthread_mutex_init(&amp;theLock, NULL);</p>
+<pre><code>pthread_mutexattr_t attr;
+pthread_mutexattr_init(&amp;attr);
+pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_RECURSIVE);
+pthread_mutex_init(&amp;lock, &amp;attr);
+pthread_mutexattr_destroy(&amp;attr);
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+    static void (^RecursiveMethod)(int);
+
+    RecursiveMethod = ^(int value) {
+
+        pthread_mutex_lock(&amp;theLock);
+        if (value &gt; 0) {
+
+            NSLog(@&quot;value = %d&quot;, value);
+            sleep(1);
+            RecursiveMethod(value - 1);
+        }
+        pthread_mutex_unlock(&amp;theLock);
+    };
+
+    RecursiveMethod(5);
+});
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这是pthread_mutex为了防止在递归的情况下出现死锁而出现的递归锁。作用和NSRecursiveLock递归锁类似。</div><div class="line"></div><div class="line">如果使用pthread_mutex_init(&amp;theLock, NULL);初始化锁的话，上面的代码会出现死锁现象。如果使用递归锁的形式，则没有问题。</div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div></pre></td></tr></table></figure>
+<p>int pthread_mutex_init(pthread_mutex_t <em> __restrict, const pthread_mutexattr_t </em> __restrict);</p>
+<p>int pthread_mutex_lock(pthread_mutex_t *);</p>
+<p>int pthread_mutex_trylock(pthread_mutex_t *);</p>
+<p>int pthread_mutex_unlock(pthread_mutex_t *);</p>
+<p>int pthread_mutex_destroy(pthread_mutex_t *);</p>
+<p>int pthread_mutex_setprioceiling(pthread_mutex_t <em> __restrict, int,<br>  int </em> __restrict);</p>
+<p>int pthread_mutex_getprioceiling(const pthread_mutex_t <em> __restrict,<br>  int </em> __restrict);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">pthread pthread_mutex 是 C 语言下多线程加互斥锁的方式，那来段 C 风格的示例代码，需要 #import &lt;pthread.h&gt;</div></pre></td></tr></table></figure></p>
+<p>static pthread_mutex_t theLock;</p>
+<ul>
+<li><p>(void)example5 {<br>  pthread_mutex_init(&amp;theLock, NULL);</p>
+<p>  pthread_t thread;<br>  pthread_create(&amp;thread, NULL, threadMethord1, NULL);</p>
+<p>  pthread_t thread2;<br>  pthread_create(&amp;thread2, NULL, threadMethord2, NULL);<br>}</p>
+</li>
+</ul>
+<p>void *threadMethord1() {<br>    pthread_mutex_lock(&amp;theLock);<br>    printf(“线程1\n”);<br>    sleep(2);<br>    pthread_mutex_unlock(&amp;theLock);<br>    printf(“线程1解锁成功\n”);<br>    return 0;<br>}</p>
+<p>void *threadMethord2() {<br>    sleep(1);<br>    pthread_mutex_lock(&amp;theLock);<br>    printf(“线程2\n”);<br>    pthread_mutex_unlock(&amp;theLock);<br>    return 0;<br>}</p>
+<p>线程1<br>线程1解锁成功<br>线程2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure></p>
+<p>int pthread_mutex_init(pthread_mutex_t <em> __restrict, const pthread_mutexattr_t </em> __restrict);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">首先是第一个方法，这是初始化一个锁，__restrict 为互斥锁的类型，传 NULL 为默认类型，一共有 4 类型。</div></pre></td></tr></table></figure></p>
+<p>PTHREAD_MUTEX_NORMAL 缺省类型，也就是普通锁。当一个线程加锁以后，其余请求锁的线程将形成一个等待队列，并在解锁后先进先出原则获得锁。</p>
+<p>PTHREAD_MUTEX_ERRORCHECK 检错锁，如果同一个线程请求同一个锁，则返回 EDEADLK，否则与普通锁类型动作相同。这样就保证当不允许多次加锁时不会出现嵌套情况下的死锁。</p>
+<p>PTHREAD_MUTEX_RECURSIVE 递归锁，允许同一个线程对同一个锁成功获得多次，并通过多次 unlock 解锁。</p>
+<p>PTHREAD_MUTEX_DEFAULT 适应锁，动作最简单的锁类型，仅等待解锁后重新竞争，没有等待队列。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">通过 pthread_mutexattr_t 来设置锁的类型，如下面代码就设置锁为递归锁。实现和 NSRecursiveLock 类似的效果。如下面的示例代码：</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>(void)example5 {<br>  pthread_mutex_init(&amp;theLock, NULL);</p>
+<p>  pthread_mutexattr_t attr;<br>  pthread_mutexattr_init(&amp;attr);<br>  pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_RECURSIVE);<br>  pthread_mutex_init(&amp;theLock, &amp;attr);<br>  pthread_mutexattr_destroy(&amp;attr);</p>
+<p>  pthread_t thread;<br>  pthread_create(&amp;thread, NULL, threadMethord, 5);</p>
+</li>
+</ul>
+<p>}</p>
+<p>void *threadMethord(int value) {<br>    pthread_mutex_lock(&amp;theLock);</p>
+<pre><code>if (value &gt; 0) {
+    printf(&quot;Value:%i\n&quot;, value);
+    sleep(1);
+    threadMethord(value - 1);
+}
+pthread_mutex_unlock(&amp;theLock);
+return 0;
+</code></pre><p>}</p>
+<p>Value:5<br>Value:4<br>Value:3<br>Value:2<br>Value:1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">回到 pthread_mutex，锁初始化完毕，就要上锁解锁了</div></pre></td></tr></table></figure></p>
+<p>pthread_mutex_lock(&amp;theLock);<br>pthread_mutex_unlock(&amp;theLock);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">和 NSLock 的 lock unlock 用法一致，但还注意到有一个 pthread_mutex_trylock 方法，pthread_mutex_trylock 和 tryLock 的区别在于，tryLock 返回的是 YES 和 NO，pthread_mutex_trylock 加锁成功返回的是 0，失败返回的是错误提示码。</div><div class="line"></div><div class="line">pthread_mutex_destroy 为释放锁资源。</div><div class="line"></div><div class="line">至于 pthread_mutex_setprioceiling 和 pthread_mutex_getprioceiling，懵逼脸，这两个用来做什么不太理解。</div><div class="line"></div><div class="line"></div><div class="line">AidenRao</div><div class="line">------</div><div class="line"></div><div class="line">pthread_mutex</div><div class="line"></div><div class="line">pthread 表示 POSIX thread，定义了一组跨平台的线程相关的 API，pthread_mutex 表示互斥锁。互斥锁的实现原理与信号量非常相似，不是使用忙等，而是阻塞线程并睡眠，需要进行上下文切换。</div><div class="line"></div><div class="line">互斥锁的常见用法如下:</div></pre></td></tr></table></figure></p>
+<p>pthread_mutexattr_t attr;<br>pthread_mutexattr_init(&amp;attr);<br>pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_NORMAL);  // 定义锁的属性</p>
+<p>pthread_mutex_t mutex;<br>pthread_mutex_init(&amp;mutex, &amp;attr) // 创建锁</p>
+<p>pthread_mutex_lock(&amp;mutex); // 申请锁<br>    // 临界区<br>pthread_mutex_unlock(&amp;mutex); // 释放锁<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">对于 pthread_mutex 来说，它的用法和之前没有太大的改变，比较重要的是锁的类型，可以有 `PTHREAD_MUTEX_NORMAL`、`PTHREAD_MUTEX_ERRORCHECK`、`PTHREAD_MUTEX_RECURSIVE` 等等，具体的特性就不做解释了，网上有很多相关资料。</div><div class="line"></div><div class="line">一般情况下，一个线程只能申请一次锁，也只能在获得锁的情况下才能释放锁，多次申请锁或释放未获得的锁都会导致崩溃。假设在已经获得锁的情况下再次申请锁，线程会因为等待锁的释放而进入睡眠状态，因此就不可能再释放锁，从而导致死锁。</div><div class="line"></div><div class="line">然而这种情况经常会发生，比如某个函数申请了锁，在临界区内又递归调用了自己。幸运的是 `pthread_mutex` 支持递归锁，也就是允许一个线程递归的申请锁，只要把 attr 的类型改成 `PTHREAD_MUTEX_RECURSIVE` 即可。</div><div class="line"></div><div class="line">**互斥锁的实现**</div><div class="line"></div><div class="line">互斥锁在申请锁时，调用了 `pthread_mutex_lock` 方法，它在不同的系统上实现各有不同，有时候它的内部是使用信号量来实现，即使不用信号量，也会调用到 `lll_futex_wait` 函数，从而导致线程休眠。</div><div class="line"></div><div class="line">上文说到如果临界区很短，忙等的效率也许更高，所以在有些版本的实现中，会首先尝试一定次数(比如 1000 次)的 testandtest，这样可以在错误使用互斥锁时提高性能。</div><div class="line"></div><div class="line">另外，由于 `pthread_mutex` 有多种类型，可以支持递归锁等，因此在申请加锁时，需要对锁的类型加以判断，这也就是为什么它和信号量的实现类似，但效率略低的原因。</div><div class="line"></div><div class="line">bestswifter</div><div class="line">---------</div><div class="line"></div><div class="line">### 9. OSSpinLock</div></pre></td></tr></table></figure></p>
+<p>__block OSSpinLock theLock = OS_SPINLOCK_INIT;<br>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{<br>    OSSpinLockLock(&amp;theLock);<br>    NSLog(@”需要线程同步的操作1 开始”);<br>    sleep(3);<br>    NSLog(@”需要线程同步的操作1 结束”);<br>    OSSpinLockUnlock(&amp;theLock);</p>
+<p>});</p>
+<p>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{<br>    OSSpinLockLock(&amp;theLock);<br>    sleep(1);<br>    NSLog(@”需要线程同步的操作2”);<br>    OSSpinLockUnlock(&amp;theLock);</p>
+<p>});<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">OSSpinLock 自旋锁，性能最高的锁。原理很简单，就是一直 do while 忙等。它的缺点是当等待时会消耗大量 CPU 资源，所以它不适用于较长时间的任务。 不过最近YY大神在自己的博客  [不再安全的 OSSpinLock](http://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/) 中说明了OSSpinLock已经不再安全，请大家谨慎使用。</div><div class="line"></div><div class="line"></div><div class="line">景铭巴巴</div><div class="line">---------</div><div class="line"></div><div class="line">```objc</div><div class="line">typedef int32_t OSSpinLock;</div><div class="line"></div><div class="line">bool    OSSpinLockTry( volatile OSSpinLock *__lock );</div><div class="line"></div><div class="line">void    OSSpinLockLock( volatile OSSpinLock *__lock );</div><div class="line"></div><div class="line">void    OSSpinLockUnlock( volatile OSSpinLock *__lock );</div></pre></td></tr></table></figure></p>
+<p>OSSpinLock 是一种自旋锁，也只有加锁，解锁，尝试加锁三个方法。和 NSLock 不同的是 NSLock 请求加锁失败的话，会先轮询，但一秒过后便会使线程进入 waiting 状态，等待唤醒。而 OSSpinLock 会一直轮询，等待时会消耗大量 CPU 资源，不适用于较长时间的任务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">    __block OSSpinLock theLock = OS_SPINLOCK_INIT;</div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</div><div class="line">        OSSpinLockLock(&amp;theLock);</div><div class="line">        NSLog(@&quot;线程1&quot;);</div><div class="line">        sleep(10);</div><div class="line">        OSSpinLockUnlock(&amp;theLock);</div><div class="line">        NSLog(@&quot;线程1解锁成功&quot;);</div><div class="line">    &#125;);</div><div class="line">    </div><div class="line">    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</div><div class="line">        sleep(1);</div><div class="line">        OSSpinLockLock(&amp;theLock);</div><div class="line">        NSLog(@&quot;线程2&quot;);</div><div class="line">        OSSpinLockUnlock(&amp;theLock);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">2016-08-19 20:25:13.526 ThreadLockControlDemo[2856:316247] 线程1</div><div class="line">2016-08-19 20:25:23.528 ThreadLockControlDemo[2856:316247] 线程1解锁成功</div><div class="line">2016-08-19 20:25:23.529 ThreadLockControlDemo[2856:316260] 线程2</div></pre></td></tr></table></figure>
+<p>拿上面的输出结果和上文 NSLock 的输出结果做对比，会发现 sleep(10) 的情况，OSSpinLock 中的“线程 2”并没有和”线程 1解锁成功“在一个时间输出，而 NSLock 这里是同一时间输出，而是有一点时间间隔，所以 OSSpinLock 一直在做着轮询，而不是像 NSLock 一样先轮询，再 waiting 等唤醒。</p>
+<h2 id="AidenRao"><a href="#AidenRao" class="headerlink" title="AidenRao"></a>AidenRao</h2><p> 上述文章中已经介绍了 OSSpinLock 不再安全，主要原因发生在低优先级线程拿到锁时，高优先级线程进入忙等(busy-wait)状态，消耗大量 CPU 时间，从而导致低优先级线程拿不到 CPU 时间，也就无法完成任务并释放锁。这种问题被称为优先级反转。</p>
+<p>为什么忙等会导致低优先级线程拿不到时间片？这还得从操作系统的线程调度说起。</p>
+<p>现代操作系统在管理普通线程时，通常采用时间片轮转算法(Round Robin，简称 RR)。每个线程会被分配一段时间片(quantum)，通常在 10-100 毫秒左右。当线程用完属于自己的时间片以后，就会被操作系统挂起，放入等待队列中，直到下一次被分配时间片。</p>
+<p><strong>自旋锁的实现原理</strong></p>
+<p>自旋锁的目的是为了确保临界区只有一个线程可以访问，它的使用可以用下面这段伪代码来描述:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">do &#123;  </div><div class="line">    Acquire Lock</div><div class="line">        Critical section  // 临界区</div><div class="line">    Release Lock</div><div class="line">        Reminder section // 不需要锁保护的代码</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 Acquire Lock 这一步，我们申请加锁，目的是为了保护临界区(Critical Section) 中的代码不会被多个线程执行。</p>
+<p>自旋锁的实现思路很简单，理论上来说只要定义一个全局变量，用来表示锁的可用情况即可，伪代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">bool lock = false; // 一开始没有锁上，任何线程都可以申请锁  </div><div class="line">do &#123;  </div><div class="line">    while(lock); // 如果 lock 为 true 就一直死循环，相当于申请锁</div><div class="line">    lock = true; // 挂上锁，这样别的线程就无法获得锁</div><div class="line">        Critical section  // 临界区</div><div class="line">    lock = false; // 相当于释放锁，这样别的线程可以进入临界区</div><div class="line">        Reminder section // 不需要锁保护的代码        </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注释写得很清楚，就不再逐行分析了。可惜这段代码存在一个问题: 如果一开始有多个线程同时执行 while 循环，他们都不会在这里卡住，而是继续执行，这样就无法保证锁的可靠性了。解决思路也很简单，只要确保申请锁的过程是原子操作即可。</p>
+<p><strong>原子操作</strong></p>
+<p>狭义上的原子操作表示一条不可打断的操作，也就是说线程在执行操作过程中，不会被操作系统挂起，而是一定会执行完。在单处理器环境下，一条汇编指令显然是原子操作，因为中断也要通过指令来实现。</p>
+<p>然而在多处理器的情况下，能够被多个处理器同时执行的操作任然算不上原子操作。因此，真正的原子操作必须由硬件提供支持，比如 x86 平台上如果在指令前面加上 “LOCK” 前缀，对应的机器码在执行时会把总线锁住，使得其他 CPU不能再执行相同操作，从而从硬件层面确保了操作的原子性。</p>
+<p>这些非常底层的概念无需完全掌握，我们只要知道上述申请锁的过程，可以用一个原子性操作 <code>test_and_set</code> 来完成，它用伪代码可以这样表示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">bool test_and_set (bool *target) &#123;  </div><div class="line">    bool rv = *target; </div><div class="line">    *target = TRUE; </div><div class="line">    return rv;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码的作用是把 target 的值设置为 1，并返回原来的值。当然，在具体实现时，它通过一个原子性的指令来完成。</p>
+<p><strong>自旋锁的总结</strong></p>
+<p>至此，自旋锁的实现原理就很清楚了:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">bool lock = false; // 一开始没有锁上，任何线程都可以申请锁  </div><div class="line">do &#123;  </div><div class="line">    while(test_and_set(&amp;lock); // test_and_set 是一个原子操作</div><div class="line">        Critical section  // 临界区</div><div class="line">    lock = false; // 相当于释放锁，这样别的线程可以进入临界区</div><div class="line">        Reminder section // 不需要锁保护的代码        </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果临界区的执行时间过长，使用自旋锁不是个好主意。之前我们介绍过时间片轮转算法，线程在多种情况下会退出自己的时间片。其中一种是用完了时间片的时间，被操作系统强制抢占。除此以外，当线程进行 I/O 操作，或进入睡眠状态时，都会主动让出时间片。显然在 while 循环中，线程处于忙等状态，白白浪费 CPU 时间，最终因为超时被操作系统抢占时间片。如果临界区执行时间较长，比如是文件读写，这种忙等是毫无必要的。</p>
+<h2 id="bestswifter"><a href="#bestswifter" class="headerlink" title="bestswifter"></a>bestswifter</h2><h2 id="二-性能对比"><a href="#二-性能对比" class="headerlink" title="二. 性能对比"></a>二. 性能对比</h2><p>对以上各个锁进行1000000此的加锁解锁的空操作时间如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">OSSpinLock:                           46.15 ms</div><div class="line">dispatch_semaphore:           56.50 ms</div><div class="line">pthread_mutex:                     178.28 ms</div><div class="line">NSCondition:                          193.38 ms</div><div class="line">NSLock:                                   175.02 ms</div><div class="line">pthread_mutex(recursive):   172.56 ms</div><div class="line">NSRecursiveLock:                   157.44 ms</div><div class="line">NSConditionLock:                   490.04 ms</div><div class="line">@synchronized:                       371.17 ms</div></pre></td></tr></table></figure>
+<p>总的来说：</p>
+<p>OSSpinLock和dispatch_semaphore的效率远远高于其他。</p>
+<p>@synchronized和NSConditionLock效率较差。</p>
+<p>鉴于OSSpinLock的不安全，所以我们在开发中如果考虑性能的话，建议使用dispatch_semaphore。</p>
+<p>如果不考虑性能，只是图个方便的话，那就使用@synchronized。</p>
+<h2 id="景铭巴巴"><a href="#景铭巴巴" class="headerlink" title="景铭巴巴"></a>景铭巴巴</h2><p>在 <a href="http://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="external">ibireme 的不再安全的 OSSpinLock</a> 一文中，有贴出这些锁的性能对比，如下图：</p>
+<p><img src="/2018/02/28/iOS-lock/锁的性能对比.png" alt="锁的性能对比(ibireme)"></p>
+<p>当然只是加锁立马解锁的时间消耗，并没有计算竞争时候的时间消耗。可以看出 OSSpinLock 性能最高，但它已经不再安全，如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，由于它会处于轮询的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。</p>
+<p>图中的 pthread_mutex(recursive) 指的是 pthread_mutex 设置为递归锁的情况。</p>
+<p>从图中可以知道 @synchronized 的效率最低，不过它的确用起来最方便，所以如果没什么性能瓶颈的话，使用它也不错。</p>
+<h3 id="OSSpinLock-的问题"><a href="#OSSpinLock-的问题" class="headerlink" title="OSSpinLock 的问题"></a>OSSpinLock 的问题</h3><p>2015-12-14 那天，swift-dev 邮件列表里有人在讨论 weak 属性的线程安全问题，其中有几位苹果工程师透露了自旋锁的 bug，对话内容大致如下：</p>
+<p>新版 iOS 中，系统维护了 5 个不同的线程优先级/QoS: background，utility，default，user-initiated，user-interactive。高优先级线程始终会在低优先级线程前执行，一个线程不会受到比它更低优先级线程的干扰。这种线程调度算法会产生潜在的优先级反转问题，从而破坏了 spin lock。</p>
+<p>具体来说，如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，它会处于 spin lock 的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。这并不只是理论上的问题，libobjc 已经遇到了很多次这个问题了，于是苹果的工程师停用了 OSSpinLock。</p>
+<p>苹果工程师 Greg Parker 提到，对于这个问题，一种解决方案是用 truly unbounded backoff 算法，这能避免 livelock 问题，但如果系统负载高时，它仍有可能将高优先级的线程阻塞数十秒之久；另一种方案是使用 handoff lock 算法，这也是 libobjc 目前正在使用的。锁的持有者会把线程 ID 保存到锁内部，锁的等待者会临时贡献出它的优先级来避免优先级反转的问题。理论上这种模式会在比较复杂的多锁条件下产生问题，但实践上目前还一切都好。<br>libobjc 里用的是 Mach 内核的 thread_switch() 然后传递了一个 mach thread port 来避免优先级反转，另外它还用了一个私有的参数选项，所以开发者无法自己实现这个锁。另一方面，由于二进制兼容问题，OSSpinLock 也不能有改动。</p>
+<p>最终的结论就是，除非开发者能保证访问锁的线程全部都处于同一优先级，否则 iOS 系统中所有类型的自旋锁都不能再使用了。</p>
+<h2 id="ibireme"><a href="#ibireme" class="headerlink" title="ibireme"></a>ibireme</h2><p>虽然这些锁看起来很复杂，但最终都是加锁，等待，解锁。一下子懂了八锁，有点小激动。</p>
+<h2 id="三-摘要"><a href="#三-摘要" class="headerlink" title="三. 摘要"></a>三. 摘要</h2><h1 id="性能快到慢"><a href="#性能快到慢" class="headerlink" title="性能快到慢"></a>性能快到慢</h1><h3 id="OSSpinLock"><a href="#OSSpinLock" class="headerlink" title="OSSpinLock"></a>OSSpinLock</h3><p>加锁，解锁，尝试加锁</p>
+<p>请求加锁失败的话会一直轮询，等待时会消耗大量 CPU 资源，不适用于较长时间的任务。</p>
+<p>OSSpinLock 性能最高，但它已经不再安全，如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，由于它会处于轮询的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。</p>
+<p>高优先级线程始终会在低优先级线程前执行，一个线程不会受到比它更低优先级线程的干扰。这种线程调度算法会产生潜在的优先级反转问题，从而破坏了 spin lock。</p>
+<p>具体来说，如果一个低优先级的线程获得锁并访问共享资源，这时一个高优先级的线程也尝试获得这个锁，它会处于 spin lock 的忙等状态从而占用大量 CPU。此时低优先级线程无法与高优先级线程争夺 CPU 时间，从而导致任务迟迟完不成、无法释放 lock。 </p>
+<p>为什么忙等会导致低优先级线程拿不到时间片？这还得从操作系统的线程调度说起。</p>
+<p>现代操作系统在管理普通线程时，通常采用时间片轮转算法(Round Robin，简称 RR)。每个线程会被分配一段时间片(quantum)，通常在 10-100 毫秒左右。当线程用完属于自己的时间片以后，就会被操作系统挂起，放入等待队列中，直到下一次被分配时间片。</p>
+<p>如果临界区的执行时间过长，使用自旋锁不是个好主意。之前我们介绍过时间片轮转算法，线程在多种情况下会退出自己的时间片。其中一种是用完了时间片的时间，被操作系统强制抢占。除此以外，当线程进行 I/O 操作，或进入睡眠状态时，都会主动让出时间片。显然在 while 循环中，线程处于忙等状态，白白浪费 CPU 时间，最终因为超时被操作系统抢占时间片。如果临界区执行时间较长，比如是文件读写，这种忙等是毫无必要的。</p>
+<p>=======================================================================================</p>
+<h3 id="dispatch-semaphore"><a href="#dispatch-semaphore" class="headerlink" title="dispatch_semaphore"></a>dispatch_semaphore</h3><p>创建信号量，一个是等待信号，一个是发送信号 +1 -1</p>
+<p>如果信号值为 0，该线程会和 NSCondition 一样直接进入 waiting 状态</p>
+<p>dispatch_semaphore 和 NSCondition 类似，都是一种基于信号的同步方式，但 NSCondition 信号只能发送，不能保存（如果没有线程在等待，则发送的信号会失效）。而 dispatch_semaphore 能保存发送的信号。dispatch_semaphore 的核心是 dispatch_semaphore_t 类型的信号量。</p>
+<p>具体的等待操作在 lll_futex_wait 函数中实现，lll 是 low level lock 的简称。这个函数通过汇编代码实现，调用到 SYS_futex 这个系统调用，使线程进入睡眠状态，主动让出时间片，这个函数在互斥锁的实现中，也有可能被用到。</p>
+<p>主动让出时间片并不总是代表效率高。让出时间片会导致操作系统切换到另一个线程，这种上下文切换通常需要 10 微秒左右，而且至少需要两次切换。如果等待时间很短，比如只有几个微秒，忙等就比线程睡眠更高效。</p>
+<p>=======================================================================================</p>
+<h3 id="pthread-mutex"><a href="#pthread-mutex" class="headerlink" title="pthread_mutex"></a>pthread_mutex</h3><p>pthread_mutex 是 C 语言下多线程加互斥锁的方式。互斥锁的实现原理与信号量非常相似，不是使用忙等，而是阻塞线程并睡眠，需要进行上下文切换。</p>
+<p>上锁解锁 pthread_mutex_lock(&amp;theLock); pthread_mutex_unlock(&amp;theLock); 和 NSLock 的 lock unlock 用法一致，但还注意到有一个 pthread_mutex_trylock 方法，pthread_mutex_trylock 和 tryLock 的区别在于，tryLock 返回的是 YES 和 NO，pthread_mutex_trylock 加锁成功返回的是 0，失败返回的是错误提示码。pthread_mutex_destroy 为释放锁资源。</p>
+<p>一般情况下，一个线程只能申请一次锁，也只能在获得锁的情况下才能释放锁，多次申请锁或释放未获得的锁都会导致崩溃。假设在已经获得锁的情况下再次申请锁，线程会因为等待锁的释放而进入睡眠状态，因此就不可能再释放锁，从而导致死锁。</p>
+<p>然而这种情况经常会发生，比如某个函数申请了锁，在临界区内又递归调用了自己。辛运的是 pthread_mutex 支持递归锁，也就是允许一个线程递归的申请锁，只要把 attr 的类型改成 PTHREAD_MUTEX_RECURSIVE 即可</p>
+<p>通过 pthread_mutexattr_t 来设置锁的类型，如下面代码就设置锁为递归锁。实现和 NSRecursiveLock 类似的效果 PTHREAD_MUTEX_RECURSIVE 递归锁，允许同一个线程对同一个锁成功获得多次，并通过多次 unlock 解锁。</p>
+<p>由于 pthread_mutex 有多种类型，可以支持递归锁等，因此在申请加锁时，需要对锁的类型加以判断，这也就是为什么它和信号量的实现类似，但效率略低的原因。</p>
+<p>=======================================================================================</p>
+<h3 id="NSLock"><a href="#NSLock" class="headerlink" title="NSLock"></a>NSLock</h3><p>NSLock 是 Objective-C 以对象的形式暴露给开发者的一种锁 NSLock 只是在内部封装了一个 pthread_mutex，属性为 PTHREAD_MUTEX_ERRORCHECK，它会损失一定性能换来错误提示。</p>
+<p>NSLock 请求加锁失败的话，会先轮询，但一秒过后便会使线程进入 waiting 状态，等待唤醒。</p>
+<p>NSLock 比 pthread_mutex 略慢的原因在于它需要经过方法调用，同时由于缓存的存在，多次方法调用不会对性能产生太大的影响。</p>
+<p>除lock和unlock方法外，NSLock还提供了tryLock和lockBeforeDate:两个方法，前一个方法会尝试加锁，如果锁不可用(已经被锁住)，刚并不会阻塞线程，并返回NO。lockBeforeDate:方法会在所指定Date之前尝试加锁，会阻塞线程, 如果在指定时间之前都不能加锁，则返回NO。指定时间之前能加锁，则返回 YES。</p>
+<p>互斥锁会使得线程阻塞，阻塞的过程又分两个阶段，第一阶段是会先空转，可以理解成跑一个 while 循环，不断地去申请加锁，在空转一定时间之后，线程会进入 waiting 状态，此时线程就不占用CPU资源了，等锁可用的时候，这个线程会立即被唤醒。轮询 1 秒之后，线程会进入 waiting 状态。</p>
+<p>=======================================================================================</p>
+<h3 id="NSCondition"><a href="#NSCondition" class="headerlink" title="NSCondition"></a>NSCondition</h3><p>一种最基本的条件锁。手动控制线程wait和signal。</p>
+<p>NSCondition 其实是封装了一个互斥锁和条件变量， 它把前者的 lock 方法和后者的 wait/signal 统一在 NSCondition 对象中，暴露给使用者:</p>
+<p>[condition wait];让当前线程处于等待状态[condition signal];CPU发信号告诉线程不用在等待，可以继续执行</p>
+<p>NSCondition 的对象实际上作为一个锁和一个线程检查器，锁上之后其它线程也能上锁，而之后可以根据条件决定是否继续运行线程，即线程是否要进入 waiting 状态，经测试，NSCondition 并不会像上文的那些锁一样，先轮询，而是直接进入 waiting 状态，当其它线程中的该锁执行 signal 或者 broadcast 方法时，线程被唤醒，继续运行之后的方法。</p>
+<p>其中 signal 和 broadcast 方法的区别在于，signal 只是一个信号量，只能唤醒一个等待的线程，想唤醒多个就得多次调用，而 broadcast 可以唤醒所有在等待的线程。如果没有等待的线程，这两个方法都没有作用。</p>
+<p>NSCondition 的底层是通过条件变量(condition variable) pthread_cond_t 来实现的。条件变量有点像信号量，提供了线程阻塞与信号机制，因此可以用来阻塞某个线程，并等待某个数据就绪，随后唤醒线程，比如常见的生产者-消费者模式。</p>
+<p>它的加解锁过程与 NSLock 几乎一致，理论上来说耗时也应该一样(实际测试也是如此)。在图中显示它耗时略长，我猜测有可能是测试者在每次加解锁的前后还附带了变量的初始化和销毁操作。</p>
+<p>在以上给出的生产者-消费者模式的代码中， pthread_cond_wait 方法的本质是锁的转移，消费者放弃锁，然后生产者获得锁，同理，pthread_cond_signal 则是一个锁从生产者到消费者转移的过程。</p>
+<p>=======================================================================================</p>
+<h3 id="pthread-mutex-recursive"><a href="#pthread-mutex-recursive" class="headerlink" title="pthread_mutex(recursive)"></a>pthread_mutex(recursive)</h3><p>一般情况下，一个线程只能申请一次锁，也只能在获得锁的情况下才能释放锁，多次申请锁或释放未获得的锁都会导致崩溃。假设在已经获得锁的情况下再次申请锁，线程会因为等待锁的释放而进入睡眠状态，阻塞了该线程，因此就不可能再释放锁，从而导致死锁。</p>
+<p>然而这种情况经常会发生，比如某个函数申请了锁，在临界区内又递归调用了自己。辛运的是 pthread_mutex 支持递归锁，也就是允许一个线程递归的申请锁，只要把 attr 的类型改成 PTHREAD_MUTEX_RECURSIVE 即可</p>
+<p>通过 pthread_mutexattr_t 来设置锁的类型，如下面代码就设置锁为递归锁。实现和 NSRecursiveLock 类似的效果 PTHREAD_MUTEX_RECURSIVE 递归锁，允许同一个线程对同一个锁成功获得多次，并通过多次 unlock 解锁。</p>
+<p>由于 pthread_mutex 有多种类型，可以支持递归锁等，因此在申请加锁时，需要对锁的类型加以判断，这也就是为什么它和信号量的实现类似，但效率略低的原因。</p>
+<p>=======================================================================================</p>
+<h3 id="NSRecursiveLock递归锁"><a href="#NSRecursiveLock递归锁" class="headerlink" title="NSRecursiveLock递归锁"></a>NSRecursiveLock递归锁</h3><p>NSRecursiveLock实际上定义的是一个递归锁，可以允许同一线程多次加锁，而不会造成死锁，而不会引起死锁。这主要是用在循环或递归操作中。</p>
+<p>上文已经说过，递归锁也是通过 pthread_mutex_lock 函数来实现，在函数内部会判断锁的类型，如果显示是递归锁，就允许递归调用，仅仅将一个计数器加一，锁的释放过程也是同理。</p>
+<p>NSRecursiveLock 与 NSLock 的区别在于内部封装的 pthread_mutex_t 对象的类型不同，前者的类型为 PTHREAD_MUTEX_RECURSIVE。</p>
+<p>=======================================================================================</p>
+<h3 id="NSConditionLock条件锁"><a href="#NSConditionLock条件锁" class="headerlink" title="NSConditionLock条件锁"></a>NSConditionLock条件锁</h3><p>当我们在使用多线程的时候，有时一把只会lock和unlock的锁未必就能完全满足我们的使用。因为普通的锁只能关心锁与不锁，而不在乎用什么钥匙才能开锁，而我们在处理资源共享的时候，多数情况是只有满足一定条件的情况下才能打开这把锁：</p>
+<p>NSConditionLock 和 NSLock 类似，都遵循 NSLocking 协议，方法都类似，只是多了一个 condition 属性，以及每个操作都多了一个关于 condition 属性的方法，例如 tryLock，tryLockWhenCondition:，NSConditionLock 可以称为条件锁，只有 condition 参数与初始化时候的 condition 相等，lock 才能正确进行加锁操作。而 unlockWithCondition: 并不是当 Condition 符合条件时才解锁，而是解锁之后，修改 Condition 的值</p>
+<p>locakWhenCondition 与 lock 方法类似，加锁失败会阻塞线程，所以线程 1 会被阻塞着，而 tryLockWhenCondition 方法就算条件不满足，也会返回 NO，不会阻塞当前线程。</p>
+<p>从上面可以得出，NSConditionLock 还可以实现任务之间的依赖。</p>
+<p>NSConditionLock 借助 NSCondition 来实现，它的本质就是一个生产者-消费者模型。“条件被满足”可以理解为生产者提供了新的内容。NSConditionLock 的内部持有一个 NSCondition 对象，以及 _condition_value 属性，在初始化时就会对这个属性进行赋值:<br>它的 lockWhenCondition 方法其实就是消费者方法: 对应的 unlockWhenCondition 方法则是生产者，使用了 broadcast 方法通知了所有的消费者:</p>
+<p>=======================================================================================</p>
+<h3 id="synchronized"><a href="#synchronized" class="headerlink" title="@synchronized"></a>@synchronized</h3><p>@synchronized(obj)指令使用的obj为该锁的唯一标识，只有当标识相同时，才为满足互斥，如果线程2中的        @synchronized(obj)改为@synchronized(self),刚线程2就不会被阻塞，@synchronized指令实现锁的优点就是我们不需要在代码中显式的创建锁对象，便可以实现锁的机制，但作为一种预防措施，@synchronized块会隐式的添加一个异常处理例程来保护代码，该处理例程会在异常抛出的时候自动的释放互斥锁。@synchronized 还有一个好处就是不用担心忘记解锁了。所以如果不想让隐式的异常处理例程带来额外的开销，你可以考虑使用锁对象。</p>
+<p>这其实是一个 OC 层面的锁， 主要是通过牺牲性能换来语法上的简洁与可读。</p>
+<p>我们知道 @synchronized 后面需要紧跟一个 OC 对象，它实际上是把这个对象当做锁来使用。这是通过一个哈希表来实现的，OC 在底层使用了一个互斥锁的数组(你可以理解为锁池)，通过对对象去哈希值来得到对应的互斥锁。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/31/multithreading-example/" rel="next" title="多线程运用">
+                <i class="fa fa-chevron-left"></i> 多线程运用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg"
+               alt="安国立" />
+          <p class="site-author-name" itemprop="name">安国立</p>
+          <p class="site-description motion-element" itemprop="description">留给中国队的时间不多了</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">18</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AnGuoli" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a1678e7f265da432c23856e" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-joomla"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/98bd5a3ecd08" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-jsfiddle"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-八种锁"><span class="nav-number">1.</span> <span class="nav-text">一. 八种锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-synchronized"><span class="nav-number">1.1.</span> <span class="nav-text">1. @synchronized</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AidenRao"><span class="nav-number">2.</span> <span class="nav-text">AidenRao</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bestswifter"><span class="nav-number">3.</span> <span class="nav-text">bestswifter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二-性能对比"><span class="nav-number">4.</span> <span class="nav-text">二. 性能对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#景铭巴巴"><span class="nav-number">5.</span> <span class="nav-text">景铭巴巴</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OSSpinLock-的问题"><span class="nav-number">5.1.</span> <span class="nav-text">OSSpinLock 的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ibireme"><span class="nav-number">6.</span> <span class="nav-text">ibireme</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三-摘要"><span class="nav-number">7.</span> <span class="nav-text">三. 摘要</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能快到慢"><span class="nav-number"></span> <span class="nav-text">性能快到慢</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OSSpinLock"><span class="nav-number">0.1.</span> <span class="nav-text">OSSpinLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dispatch-semaphore"><span class="nav-number">0.2.</span> <span class="nav-text">dispatch_semaphore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread-mutex"><span class="nav-number">0.3.</span> <span class="nav-text">pthread_mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSLock"><span class="nav-number">0.4.</span> <span class="nav-text">NSLock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSCondition"><span class="nav-number">0.5.</span> <span class="nav-text">NSCondition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pthread-mutex-recursive"><span class="nav-number">0.6.</span> <span class="nav-text">pthread_mutex(recursive)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSRecursiveLock递归锁"><span class="nav-number">0.7.</span> <span class="nav-text">NSRecursiveLock递归锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSConditionLock条件锁"><span class="nav-number">0.8.</span> <span class="nav-text">NSConditionLock条件锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized"><span class="nav-number">0.9.</span> <span class="nav-text">@synchronized</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安国立</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
