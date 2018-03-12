@@ -1,0 +1,791 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="const的作用：
+const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
+被const修饰的变量是只读的。
+
+static的作用：
+修饰局部变量：
+
+
+延长局部变量的生命周期,程序结束才会销毁。
+局部变量只会生成一份内存,只会初始化一次。
+改变局部变量的作用域。
+
+
+修饰全局变量:
+
+
+只能在本文件中访问,修改全局变量的作用域,生命周期不会改
+避免重复定义全局变量
+.pch生成的全局">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif">
+<meta property="og:url" content="http://yoursite.com/2018/03/06/const-static-extern、UIKIT-EXTERN、define-in-OC/index.html">
+<meta property="og:site_name" content="An Guoli's Blog">
+<meta property="og:description" content="const的作用：
+const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
+被const修饰的变量是只读的。
+
+static的作用：
+修饰局部变量：
+
+
+延长局部变量的生命周期,程序结束才会销毁。
+局部变量只会生成一份内存,只会初始化一次。
+改变局部变量的作用域。
+
+
+修饰全局变量:
+
+
+只能在本文件中访问,修改全局变量的作用域,生命周期不会改
+避免重复定义全局变量
+.pch生成的全局">
+<meta property="og:updated_time" content="2018-03-07T03:19:08.511Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif">
+<meta name="twitter:description" content="const的作用：
+const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
+被const修饰的变量是只读的。
+
+static的作用：
+修饰局部变量：
+
+
+延长局部变量的生命周期,程序结束才会销毁。
+局部变量只会生成一份内存,只会初始化一次。
+改变局部变量的作用域。
+
+
+修饰全局变量:
+
+
+只能在本文件中访问,修改全局变量的作用域,生命周期不会改
+避免重复定义全局变量
+.pch生成的全局">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/06/const-static-extern、UIKIT-EXTERN、define-in-OC/"/>
+
+
+
+
+
+  <title> OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif | An Guoli's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+<a href="https://github.com/anguoli"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">An Guoli's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/06/const-static-extern、UIKIT-EXTERN、define-in-OC/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="安国立">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="An Guoli's Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="An Guoli's Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-06T21:18:31+08:00">
+                2018-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="const的作用："><a href="#const的作用：" class="headerlink" title="const的作用："></a>const的作用：</h2><ol>
+<li>const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。</li>
+<li>被const修饰的变量是只读的。</li>
+</ol>
+<h2 id="static的作用："><a href="#static的作用：" class="headerlink" title="static的作用："></a>static的作用：</h2><ul>
+<li>修饰局部变量：</li>
+</ul>
+<ol>
+<li>延长局部变量的生命周期,程序结束才会销毁。</li>
+<li>局部变量只会生成一份内存,只会初始化一次。</li>
+<li>改变局部变量的作用域。</li>
+</ol>
+<ul>
+<li>修饰全局变量:</li>
+</ul>
+<ol>
+<li>只能在本文件中访问,修改全局变量的作用域,生命周期不会改</li>
+<li>避免重复定义全局变量</li>
+<li>.pch生成的全局变量是每个文件一份，所以修改所在文件的全局变量并不能跨文件修改</li>
+</ol>
+<h2 id="extern的作用"><a href="#extern的作用" class="headerlink" title="extern的作用"></a>extern的作用</h2><p>只是用来获取全局变量(包括全局静态变量)的值，不能用于定义变量</p>
+<p>extern工作原理:先在当前文件查找有没有全局变量，没有找到，才会去其他文件查找。</p>
+<h2 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h2><ul>
+<li><p>.h不加 external</p>
+<p>.h中</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> #import&lt;UIKit/UIKit.h&gt; </div><div class="line">NSString* const myTest;</div><div class="line">``` </div><div class="line"></div><div class="line">.m中</div></pre></td></tr></table></figure>
+<p>#import<uikit uikit.h=""><br>NSString * const myTest = @”.m”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果不在.h中加extern,去引用.h中的变量时，因为.h和.m同时声明一个变量时，虽然写的时候不报错，但是在代码编译的时候会报错（这也说明.m文件不管有没有引用都会编译并链接），错误如下：</div></pre></td></tr></table></figure></uikit></p>
+<p>1 duplicate symbol for architecture x86_64<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">所以extern是必要的，表明.h中的全局变量引用自其他文件，我们要在.h中加上extern.h中</div></pre></td></tr></table></figure></p>
+<p>#import<uikit uikit.h=""><br>extern NSString* const myTest;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">- const 修饰范围</div></pre></td></tr></table></figure></uikit></p>
+<p>#import <foundation foundation.h=""><br>static NSString  <em> const testString = @”testString”;<br>FOUNDATION_EXTERN NSString </em> const testStringExternal;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure></foundation></p>
+<p>#import “MacroOC.h”<br>NSString * const testStringExternal = @”testStringExternal”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这样的才是不可以使用的时候修改的,修改的时候会报一下错误:</div></pre></td></tr></table></figure></p>
+<p>testString = @”123”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure></p>
+<p> Cannot assign to variable ‘testString’ with const-qualified type ‘NSString *const __strong’<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如果将 const 放在*前面是指针不变,里面的内容是可以改变的</div></pre></td></tr></table></figure></p>
+<p>static NSString const *  testString = @”testString”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div></pre></td></tr></table></figure></p>
+<p>2017-01-06 16:43:46.623 OC2SwiftDemo[1891:166514] testString<br>2017-01-06 16:43:46.624 OC2SwiftDemo[1891:166514] 修改后<br>2017-01-06 16:43:46.624 OC2SwiftDemo[1891:166514] 123<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">系统OC 自带的写法也是写在*之后的</div></pre></td></tr></table></figure></p>
+<p>UIKIT_EXTERN NSString <em>const UIKeyboardFrameBeginUserInfoKey        NS_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED; // NSValue of CGRect<br>UIKIT_EXTERN NSString </em>const UIKeyboardFrameEndUserInfoKey          NS_AVAILABLE_IOS(3_2) <strong>TVOS_PROHIBITED; // NSValue of CGRect<br>UIKIT_EXTERN NSString *const UIKeyboardAnimationDurationUserInfoKey NS_AVAILABLE_IOS(3_0) </strong>TVOS_PROHIBITED; // NSNumber of double<br>UIKIT_EXTERN NSString <em>const UIKeyboardAnimationCurveUserInfoKey    NS_AVAILABLE_IOS(3_0) __TVOS_PROHIBITED; // NSNumber of NSUInteger (UIViewAnimationCurve)<br>UIKIT_EXTERN NSString </em>const UIKeyboardIsLocalUserInfoKey           NS_AVAILABLE_IOS(9_0) __TVOS_PROHIBITED; // NSNumber of BOOL<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">- 全局变量的作用域</div><div class="line"></div><div class="line">1. 定义的全局变量作用范围是当前的类,其他类可以定义重名的全局变量;</div><div class="line">2. swift 定义一个全局变量,由于命名空间原因,其他文件是不可以再定义的,再定义会报重定义</div><div class="line">3. OC 中如果使用 import ,类中和 import 类中定义同名的全局变量会报重定义</div><div class="line"></div><div class="line"></div><div class="line">## 宏的常见用法：</div><div class="line"></div><div class="line">1. 常见字符串抽成宏</div><div class="line">2. 常见代码抽成宏</div><div class="line"></div><div class="line">## const(常量)</div><div class="line"></div><div class="line">当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const</div><div class="line"></div><div class="line">当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const</div><div class="line"></div><div class="line">## 宏与const的区别</div><div class="line"></div><div class="line">- `编译时刻`:宏是预编译（编译之前处理），const是编译阶段。</div><div class="line"></div><div class="line">- `编译检查`:宏不做检查，不会报编译错误，只是替换，const会编译检查，会报编译错误。</div><div class="line"></div><div class="line">- `宏的好处`:宏能定义一些函数，方法。 const不能。</div><div class="line"></div><div class="line">- `宏的坏处`:使用大量宏，容易造成编译时间久，每次都需要重新替换。</div><div class="line"></div><div class="line">注意:很多Blog都说使用宏，会消耗很多内存，但是并不会生成很多内存，宏定义的是常量，常量都放在常量区，只会生成一份内存。</div><div class="line"></div><div class="line">## const</div><div class="line"></div><div class="line">- 1.const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p，对象变量）</div><div class="line">- 2.被const修饰的变量是只读的。</div><div class="line"></div><div class="line">const的简单使用</div><div class="line"></div><div class="line">首先我们要复习一下C语言的指针</div></pre></td></tr></table></figure></p>
+<p>// 定义int变量<br>int a = 66;<br>int b = 88;<br>// 定义指向a的指针变量<br> int <em>p=&a;<br>// 修改p的地址<br>   p = &b;
+   </em>p = 30;<br>NSLog(@”%d”,b);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">请问打印值为多少？</div><div class="line"></div><div class="line">首先p是指向a的指针，p保存的是a的地址，p=&amp;b时，p变成的指向b的指针，所以*p=30，其实就是给b附值，所以打印结果为30。</div><div class="line"></div><div class="line">写下来要使用const了</div></pre></td></tr></table></figure></p>
+<p>// 用const修饰指针变量<br>int <em> const p = &a;<br>此时<br>(1) p=&b;<br>(2) </em>p=30;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">请问1和2哪个会报错？</div><div class="line">上面解释了const是修饰右边的变量是只读的，所以说 p是只读的那么1就会报错。</div></pre></td></tr></table></figure></p>
+<p>const  int <em> p = &a;<br>此时<br>(1) p=&b;<br>(2) </em>p=30;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">请问1和2哪个会报错？</div><div class="line"></div><div class="line">同理 所以说 p是只读的那么2就会报错。</div><div class="line">其实 const int * p = &amp;a; 与 int const p = &amp;a; 是等价的</div><div class="line"></div><div class="line">有两个更变态的写法</div></pre></td></tr></table></figure></p>
+<p> int const <em> const p = &a; // </em>p:只读  p:只读<br> const int <em> const p = &a; // </em>p:只读  p:只读<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">不用说大家也理解了吧</div><div class="line"></div><div class="line">现在大家明白了const的作用吧，点开苹果头文件可以开到很多这样的写法，现在你是不是可以理解苹果为什么要这样做了吗？</div></pre></td></tr></table></figure></p>
+<p>  UIKIT_EXTERN NSString *const UIViewControllerHierarchyInconsistencyException NS_AVAILABLE_IOS(5_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">那我们继续学习const的用法吧</div><div class="line"></div><div class="line">## const开发中使用场景:</div><div class="line"></div><div class="line">- 1.当一个方法参数只读</div><div class="line">- 2.定义只读全局变量</div><div class="line"></div><div class="line">很多时候我们在开发中都要static和extern与const联合使用,所以接下来学习一下static和extern和的作用</div><div class="line"></div><div class="line">## static作用</div><div class="line"></div><div class="line">- 修饰局部变量：</div><div class="line"></div><div class="line">1. 延长局部变量的生命周期,程序结束才会销毁。</div><div class="line">2. 局部变量只会生成一份内存,只会初始化一次。</div><div class="line"></div><div class="line">- 修饰全局变量</div><div class="line"></div><div class="line">1. 只能在本文件中访问,修改全局变量的作用域,生命周期不会改。</div><div class="line"></div><div class="line">### 修饰局部变量</div></pre></td></tr></table></figure></p>
+<p>for (int i=0; i<10; i++)="" {="" int="" a="0;" a++;="" nslog(@"%d",a);="" }="" <figure="" class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">请问输出结果为多少？每次进入大括号内都会重新初始化 a 所以结果为 1。</div><div class="line"></div><div class="line">如果加上static呢</div></pre></td></tr></table></10;></p>
+<p>for (int i=0; i<10; i++)="" {="" static="" int="" a="0;" a++;="" nslog(@"%d",a);="" }="" <figure="" class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">此时的请问输出结果为多少？</div><div class="line"></div><div class="line">static:修饰的变量,程序一运行就会分配一次内存，用static修饰的代码,只会在程序一启动就会执行,以后就不会在执行，所以结果为10。</div><div class="line"></div><div class="line">## extern作用:</div><div class="line"></div><div class="line">声明一个变量,不能定义变量</div><div class="line"></div><div class="line">注意:extern修饰的变量不能初始化</div><div class="line"></div><div class="line">使用场景,一般用于声明全局变量</div><div class="line"></div><div class="line"># static与const联合使用</div><div class="line"></div><div class="line">- static与const作用:**声明一个只读的静态变量**</div><div class="line"></div><div class="line">- 开发使用场景:在`一个文件中`经常使用的字符串常量，可以使用static与const组合</div></pre></td></tr></table></10;></p>
+<p> static  NSString * const key = @”name”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">所以大家要记住：staic和const联合的作用:**声明一个在本文件中静态的全局只读常量**</div><div class="line"></div><div class="line">iOS中staic和const常用使用场景，是用来代替宏，把一个经常使用的字符串常量，定义成静态全局只读变量。</div><div class="line"></div><div class="line">## extern与const联合使用</div><div class="line"></div><div class="line">开发中使用场景:在`多个文件中`经常使用的同一个字符串常量，可以使用extern与const组合。</div><div class="line"></div><div class="line">- 原因:</div><div class="line"></div><div class="line">	- static与const组合：在每个文件都需要定义一份静态全局变量。</div><div class="line">	- extern与const组合:只需要定义一份全局变量，多个文件共享。</div><div class="line">	</div><div class="line">- 全局常量正规写法:开发中便于管理所有的全局变量，通常搞一个全局的文件，里面专门定义全局变量，统一管理，要不然项目文件多不好找。</div><div class="line"></div><div class="line">比如我们在新建一个文件，只留.m里#import &lt;Foundation/Foundation.h&gt;,其他的都删除了</div><div class="line"></div><div class="line">在.m里定义</div></pre></td></tr></table></figure></p>
+<p>NSString * const name = @”zhanming”;</p>
+<p>NSString * const name1 = @”zhanming”;</p>
+<p>NSString * const name2 = @”zhanming”;</p>
+<p>NSString * const name3 = @”zhanming”;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">在.h里引用</div></pre></td></tr></table></figure></p>
+<p>extern NSString * const name ;</p>
+<p>extern NSString * const name1 ;</p>
+<p>extern NSString * const name2 ;</p>
+<p>extern NSString * const name3 ;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这样就可以在程序里引用了哈哈，可是我们点开苹果的头文件发现</div></pre></td></tr></table></figure></p>
+<p>UIKIT_EXTERN NSString *const UIViewControllerShowDetailTargetDidChangeNotification NS_AVAILABLE_IOS(8_0);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">苹果用了`UIKIT_EXTERN`这是什么的不要担心我们点进去看看发现</div></pre></td></tr></table></figure></p>
+<p>#define UIKIT_EXTERN         extern <strong>attribute</strong>((visibility (“default”)))<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">居然就是extern</div><div class="line"></div><div class="line">把我们的在.h里extern换成UIKIT_EXTERN</div></pre></td></tr></table></figure></p>
+<p>UIKIT_EXTERN NSString * const name ;</p>
+<p>UIKIT_EXTERN NSString * const name1 ;</p>
+<p>UIKIT_EXTERN NSString * const name2 ;</p>
+<p>UIKIT_EXTERN NSString * const name3 ;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">**最后提醒**：在iOS开发中请尽量多使用const、enum来代替宏定义(#define),随着项目工程的逐渐增大，过多的宏定义还可能影响项目的编译速度.</div><div class="line"></div><div class="line"></div><div class="line">const，当用于修饰变量时，则指定了变量值是不变的。</div><div class="line"></div><div class="line">### const变量与define宏定义的区别</div><div class="line"></div><div class="line">- (1) 编译器处理方式不同</div><div class="line"></div><div class="line">  define宏是在预处理阶段展开。</div><div class="line">  const变量在编译时确定其值。</div><div class="line">  </div><div class="line">- (2) 类型和安全检查不同</div><div class="line"></div><div class="line">  define宏没有类型，不做任何类型检查，仅仅是展开。</div><div class="line">  const变量有具体的类型，在编译阶段会执行类型检查。</div><div class="line">- (3) 存储方式不同</div><div class="line"></div><div class="line">  define宏仅仅是展开，有多少地方使用，就展开多少次，宏本身不会分配内存，宏展开后的立即数是会占用内存的。（展开多少次就分配多少次内存）</div><div class="line">  </div><div class="line">  编译器通常不为普通const变量分配存储空间，而是将它们保存在符号表中，这使得它成为一个编译期间的常量，编译时对其进行类似于宏定义的操作，在出现const变量的地方就替换成其对应的值，没有了存储与读内存的操作，使得它的效率也很高。只有在对const变量使用extern关键字或者取地址操作时才会为它分配存储空间，且const变量从汇编的角度来看，操作const变量时只是给出了对应的内存地址，而不是象#define一样给出的是立即数，所以，const变量在程序运行过程中只有一份拷贝，不会多次分配存储空间。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">1. 简单的例子：</div></pre></td></tr></table></figure></p>
+<p>//定义变量<br>int const age = 100;<br>const float height = 200;</p>
+<p>//若修改变量的值<br>age = 101;//编译报错<br>height = 201;//编译报错<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">2. 使用extern定义项目的全局常变量</div><div class="line"></div><div class="line">.h文件</div></pre></td></tr></table></figure></p>
+<p>/<em><br>项目的全局变量
+</em>/<br>@interface MenuOrderExtern : NSObject</p>
+<p>//下面定义的指针，“值”（内容）是可以改变的，因为const此时修饰的是指针p，而不是指针内容。<br>//UIKIT_EXTERN NSString const <em>orderTypeBreakfast;<br>//UIKIT_EXTERN const NSString </em>orderTypeBreakfast;</p>
+<p>//const，修饰的是它右边的内容。此时修饰的是变量本身，所以值不可被改变。<br>//所以，需要定义全局常变量而且防止被无意修改，下面也是苹果官方写法:<br>//UIKIT_EXTERN =extern,此处的作用是为了阅读代码的人知道，别处有此引用，写不写对编译器没关系<br>UIKIT_EXTERN NSString <em>const orderTypeBreakfast;<br>UIKIT_EXTERN NSString </em>const orderTypeLunch;<br>UIKIT_EXTERN NSString *const orderTypeDinner;</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">.m文件</div></pre></td></tr></table></figure></p>
+<p>@implementation MenuOrderExtern<br>//定义实质的内容<br>NSString <em>const orderTypeBreakfast = @”breakfast”;<br>NSString </em>const orderTypeLunch = @”lunch”;<br>NSString *const orderTypeDinner = @”dinner”;</p>
+<p>@end<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">如何使用</div></pre></td></tr></table></figure></p>
+<p>//外部.m文件引用<br>extern NSString *const orderTypeBreakfast;<br>```</p>
+<p><a href="https://www.jianshu.com/p/89656ccfe464" target="_blank" rel="external">https://www.jianshu.com/p/89656ccfe464</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/b37b63b10bff" target="_blank" rel="external">OC中的extern,static,const</a></p>
+<p><a href="https://www.jianshu.com/p/57c2ac02f553" target="_blank" rel="external">iOS中宏与const的区别与const的使用详解</a></p>
+<p><a href="https://www.jianshu.com/p/4abe3a968e6b" target="_blank" rel="external">const，extern</a></p>
+<p><a href="https://www.jianshu.com/p/89656ccfe464" target="_blank" rel="external">iOS 关键字const/static/extern、UIKIT_EXTERN区别和用法</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/06/local-and-global-variables-in-OC/" rel="next" title="OC中的 全局变量、局部变量、静态全局变量、静态局部变量">
+                <i class="fa fa-chevron-left"></i> OC中的 全局变量、局部变量、静态全局变量、静态局部变量
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg"
+               alt="安国立" />
+          <p class="site-author-name" itemprop="name">安国立</p>
+          <p class="site-description motion-element" itemprop="description">留给中国队的时间不多了</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">20</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AnGuoli" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a1678e7f265da432c23856e" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-joomla"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/98bd5a3ecd08" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-jsfiddle"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#const的作用："><span class="nav-number">1.</span> <span class="nav-text">const的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static的作用："><span class="nav-number">2.</span> <span class="nav-text">static的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#extern的作用"><span class="nav-number">3.</span> <span class="nav-text">extern的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重点"><span class="nav-number">4.</span> <span class="nav-text">重点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安国立</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
