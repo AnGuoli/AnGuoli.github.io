@@ -84,70 +84,52 @@
 
 
 
-<meta name="description" content="const的作用：
-const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
-被const修饰的变量是只读的。
+<meta name="description" content="宏的常见用法：
+常见字符串抽成宏
+常见代码抽成宏
 
-static的作用：
-修饰局部变量：
+const(常量)的作用：当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const
+宏与const的区别
+编译时刻:宏是预编译（编译之前处理），const是编译阶段。
 
+编译检查:宏不做检查，不会报编译错误，只是替换，const会编译检查，会报编译错误。
 
-延长局部变量的生命周期,程序结束才会销毁。
-局部变量只会生成一份内存,只会初始化一次。
-改变局部变量的作用域。
+宏的好处:宏能定义一些函数，方法。 const不能。
 
-
-修饰全局变量:
-
-
-只能在本文件中访问,修改全局变量的作用域,生命周期不会改
-避免重复定义全局变量
-.pch生成的全局">
+宏的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif">
 <meta property="og:url" content="http://yoursite.com/2018/03/06/const-static-extern、UIKIT-EXTERN、define-in-OC/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="const的作用：
-const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
-被const修饰的变量是只读的。
+<meta property="og:description" content="宏的常见用法：
+常见字符串抽成宏
+常见代码抽成宏
 
-static的作用：
-修饰局部变量：
+const(常量)的作用：当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const
+宏与const的区别
+编译时刻:宏是预编译（编译之前处理），const是编译阶段。
 
+编译检查:宏不做检查，不会报编译错误，只是替换，const会编译检查，会报编译错误。
 
-延长局部变量的生命周期,程序结束才会销毁。
-局部变量只会生成一份内存,只会初始化一次。
-改变局部变量的作用域。
+宏的好处:宏能定义一些函数，方法。 const不能。
 
-
-修饰全局变量:
-
-
-只能在本文件中访问,修改全局变量的作用域,生命周期不会改
-避免重复定义全局变量
-.pch生成的全局">
-<meta property="og:updated_time" content="2018-03-12T07:19:03.037Z">
+宏的">
+<meta property="og:updated_time" content="2018-03-12T09:11:26.512Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OC里的const/static/extern、UIKIT_EXTERN、#define、#ifdef/#else/#endif">
-<meta name="twitter:description" content="const的作用：
-const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。
-被const修饰的变量是只读的。
+<meta name="twitter:description" content="宏的常见用法：
+常见字符串抽成宏
+常见代码抽成宏
 
-static的作用：
-修饰局部变量：
+const(常量)的作用：当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const
+宏与const的区别
+编译时刻:宏是预编译（编译之前处理），const是编译阶段。
 
+编译检查:宏不做检查，不会报编译错误，只是替换，const会编译检查，会报编译错误。
 
-延长局部变量的生命周期,程序结束才会销毁。
-局部变量只会生成一份内存,只会初始化一次。
-改变局部变量的作用域。
+宏的好处:宏能定义一些函数，方法。 const不能。
 
-
-修饰全局变量:
-
-
-只能在本文件中访问,修改全局变量的作用域,生命周期不会改
-避免重复定义全局变量
-.pch生成的全局">
+宏的">
 
 
 
@@ -386,67 +368,11 @@ static的作用：
       
 
       
-        <h2 id="const的作用："><a href="#const的作用：" class="headerlink" title="const的作用："></a>const的作用：</h2><ol>
-<li>const仅仅用来修饰右边的变量（基本数据变量p，指针变量*p）。</li>
-<li>被const修饰的变量是只读的。</li>
-</ol>
-<h2 id="static的作用："><a href="#static的作用：" class="headerlink" title="static的作用："></a>static的作用：</h2><ul>
-<li>修饰局部变量：</li>
-</ul>
-<ol>
-<li>延长局部变量的生命周期,程序结束才会销毁。</li>
-<li>局部变量只会生成一份内存,只会初始化一次。</li>
-<li>改变局部变量的作用域。</li>
-</ol>
-<ul>
-<li>修饰全局变量:</li>
-</ul>
-<ol>
-<li>只能在本文件中访问,修改全局变量的作用域,生命周期不会改</li>
-<li>避免重复定义全局变量</li>
-<li>.pch生成的全局变量是每个文件一份，所以修改所在文件的全局变量并不能跨文件修改</li>
-</ol>
-<h2 id="extern的作用"><a href="#extern的作用" class="headerlink" title="extern的作用"></a>extern的作用</h2><p>只是用来获取全局变量(包括全局静态变量)的值，不能用于定义变量</p>
-<p>extern工作原理:先在当前文件查找有没有全局变量，没有找到，才会去其他文件查找。</p>
-<h2 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h2><ul>
-<li><p>.h不加 external</p>
-<p>.h中</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> #import&lt;UIKit/UIKit.h&gt; </div><div class="line">NSString* const myTest;</div></pre></td></tr></table></figure>
-<p>.m中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#import&lt;UIKit/UIKit.h&gt;</div><div class="line">NSString * const myTest = @&quot;.m&quot;;</div></pre></td></tr></table></figure>
-<p>如果不在.h中加extern,去引用.h中的变量时，因为.h和.m同时声明一个变量时，虽然写的时候不报错，但是在代码编译的时候会报错（这也说明.m文件不管有没有引用都会编译并链接），错误如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">1 duplicate symbol for architecture x86_64</div></pre></td></tr></table></figure>
-<p>所以extern是必要的，表明.h中的全局变量引用自其他文件，我们要在.h中加上extern.h中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#import&lt;UIKit/UIKit.h&gt; </div><div class="line">extern NSString* const myTest;</div></pre></td></tr></table></figure>
-<ul>
-<li>const 修饰范围</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#import &lt;Foundation/Foundation.h&gt;</div><div class="line">static NSString  * const testString = @&quot;testString&quot;;</div><div class="line">FOUNDATION_EXTERN NSString * const testStringExternal;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#import &quot;MacroOC.h&quot;</div><div class="line">NSString * const testStringExternal = @&quot;testStringExternal&quot;;</div></pre></td></tr></table></figure>
-<p>这样的才是不可以使用的时候修改的,修改的时候会报一下错误:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">testString = @&quot;123&quot;;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Cannot assign to variable &apos;testString&apos; with const-qualified type &apos;NSString *const __strong&apos;</div></pre></td></tr></table></figure>
-<p>如果将 const 放在*前面是指针不变,里面的内容是可以改变的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">static NSString const *  testString = @&quot;testString&quot;;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">2017-01-06 16:43:46.623 OC2SwiftDemo[1891:166514] testString</div><div class="line">2017-01-06 16:43:46.624 OC2SwiftDemo[1891:166514] 修改后</div><div class="line">2017-01-06 16:43:46.624 OC2SwiftDemo[1891:166514] 123</div></pre></td></tr></table></figure>
-<p>系统OC 自带的写法也是写在*之后的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">UIKIT_EXTERN NSString *const UIKeyboardFrameBeginUserInfoKey        NS_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED; // NSValue of CGRect</div><div class="line">UIKIT_EXTERN NSString *const UIKeyboardFrameEndUserInfoKey          NS_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED; // NSValue of CGRect</div><div class="line">UIKIT_EXTERN NSString *const UIKeyboardAnimationDurationUserInfoKey NS_AVAILABLE_IOS(3_0) __TVOS_PROHIBITED; // NSNumber of double</div><div class="line">UIKIT_EXTERN NSString *const UIKeyboardAnimationCurveUserInfoKey    NS_AVAILABLE_IOS(3_0) __TVOS_PROHIBITED; // NSNumber of NSUInteger (UIViewAnimationCurve)</div><div class="line">UIKIT_EXTERN NSString *const UIKeyboardIsLocalUserInfoKey           NS_AVAILABLE_IOS(9_0) __TVOS_PROHIBITED; // NSNumber of BOOL</div></pre></td></tr></table></figure>
-<ul>
-<li>全局变量的作用域</li>
-</ul>
-<ol>
-<li>定义的全局变量作用范围是当前的类,其他类可以定义重名的全局变量;</li>
-<li>swift 定义一个全局变量,由于命名空间原因,其他文件是不可以再定义的,再定义会报重定义</li>
-<li>OC 中如果使用 import ,类中和 import 类中定义同名的全局变量会报重定义</li>
-</ol>
-<h2 id="宏的常见用法："><a href="#宏的常见用法：" class="headerlink" title="宏的常见用法："></a>宏的常见用法：</h2><ol>
+        <h2 id="宏的常见用法："><a href="#宏的常见用法：" class="headerlink" title="宏的常见用法："></a>宏的常见用法：</h2><ol>
 <li>常见字符串抽成宏</li>
 <li>常见代码抽成宏</li>
 </ol>
-<h2 id="const-常量"><a href="#const-常量" class="headerlink" title="const(常量)"></a>const(常量)</h2><p>当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const</p>
-<p>当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const</p>
+<h2 id="const-常量-的作用："><a href="#const-常量-的作用：" class="headerlink" title="const(常量)的作用："></a>const(常量)的作用：</h2><p>当有字符串常量的时候，苹果推荐我们使用const，苹果经常把常用字符串定义成const</p>
 <h2 id="宏与const的区别"><a href="#宏与const的区别" class="headerlink" title="宏与const的区别"></a>宏与const的区别</h2><ul>
 <li><p><code>编译时刻</code>:宏是预编译（编译之前处理），const是编译阶段。</p>
 </li>
@@ -484,12 +410,15 @@ static的作用：
 <li>2.定义只读全局变量</li>
 </ul>
 <p>很多时候我们在开发中都要static和extern与const联合使用,所以接下来学习一下static和extern和的作用</p>
-<h2 id="static作用"><a href="#static作用" class="headerlink" title="static作用"></a>static作用</h2><ul>
+<h2 id="static作用"><a href="#static作用" class="headerlink" title="static作用"></a>static作用</h2><p>参考: <a href="http://blog.yoonangel.com/2018/03/06/local-and-global-variables-in-OC/" target="_blank" rel="external">http://blog.yoonangel.com/2018/03/06/local-and-global-variables-in-OC/</a></p>
+<p>对于<strong>全局变量</strong>来说，static 改变了其<strong>作用域</strong>；对于<strong>局部变量</strong>来说，static改变了其<strong>存储方式</strong>，从而改变了<strong>生命周期</strong>。</p>
+<ul>
 <li>修饰局部变量：</li>
 </ul>
 <ol>
 <li>延长局部变量的生命周期,程序结束才会销毁。</li>
-<li>局部变量只会生成一份内存,只会初始化一次。</li>
+<li>静态局部变量只会生成一份内存,只会初始化一次。</li>
+<li>不会改变局部变量的作用域</li>
 </ol>
 <ul>
 <li>修饰全局变量</li>
@@ -502,8 +431,9 @@ static的作用：
 <p>如果加上static呢</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">for (int i=0; i&lt;10; i++) &#123;</div><div class="line">   static int a = 0;</div><div class="line">    a++;</div><div class="line">    NSLog(@&quot;%d&quot;,a);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>此时的请问输出结果为多少？</p>
-<p>static:修饰的变量,程序一运行就会分配一次内存，用static修饰的代码,只会在程序一启动就会执行,以后就不会在执行，所以结果为10。</p>
-<h2 id="extern作用"><a href="#extern作用" class="headerlink" title="extern作用:"></a>extern作用:</h2><p>声明一个变量,不能定义变量</p>
+<p>static:修饰的变量,程序一运行就会分配一次内存，用static修饰的代码,只会在程序一启动就会执行,以后就不会在执行，所以结果为1~10。</p>
+<h2 id="extern作用"><a href="#extern作用" class="headerlink" title="extern作用:"></a>extern作用:</h2><p>这个单词翻译过来是“外面的、外部的”。顾名思义，它的作用是声明外部全局变量。这里需要特别注意extern只能声明，不能用于实现，而且定义和分配内存都在原来类中。</p>
+<p>声明一个变量,不能定义变量</p>
 <p>注意:extern修饰的变量不能初始化</p>
 <p>使用场景,一般用于声明全局变量</p>
 <h1 id="static与const联合使用"><a href="#static与const联合使用" class="headerlink" title="static与const联合使用"></a>static与const联合使用</h1><ul>
@@ -539,7 +469,6 @@ static的作用：
 <p>把我们的在.h里extern换成UIKIT_EXTERN</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">UIKIT_EXTERN NSString * const name ;</div><div class="line"></div><div class="line">UIKIT_EXTERN NSString * const name1 ;</div><div class="line"></div><div class="line">UIKIT_EXTERN NSString * const name2 ;</div><div class="line"></div><div class="line">UIKIT_EXTERN NSString * const name3 ;</div></pre></td></tr></table></figure>
 <p><strong>最后提醒</strong>：在iOS开发中请尽量多使用const、enum来代替宏定义(#define),随着项目工程的逐渐增大，过多的宏定义还可能影响项目的编译速度.</p>
-<p>const，当用于修饰变量时，则指定了变量值是不变的。</p>
 <h3 id="const变量与define宏定义的区别"><a href="#const变量与define宏定义的区别" class="headerlink" title="const变量与define宏定义的区别"></a>const变量与define宏定义的区别</h3><ul>
 <li><p>(1) 编译器处理方式不同</p>
 <p>define宏是在预处理阶段展开。<br>const变量在编译时确定其值。</p>
@@ -552,6 +481,8 @@ static的作用：
 <p>编译器通常不为普通const变量分配存储空间，而是将它们保存在符号表中，这使得它成为一个编译期间的常量，编译时对其进行类似于宏定义的操作，在出现const变量的地方就替换成其对应的值，没有了存储与读内存的操作，使得它的效率也很高。只有在对const变量使用extern关键字或者取地址操作时才会为它分配存储空间，且const变量从汇编的角度来看，操作const变量时只是给出了对应的内存地址，而不是象#define一样给出的是立即数，所以，const变量在程序运行过程中只有一份拷贝，不会多次分配存储空间。</p>
 </li>
 </ul>
+<p>define宏仅仅是展开，有多少地方使用，就展开多少次，不会分配内存。（宏定义不分配内存，变量定义分配内存。）</p>
+<p>const常量会在内存中分配(可以是堆中也可以是栈中)。</p>
 <ol>
 <li>简单的例子：</li>
 </ol>
@@ -566,8 +497,7 @@ static的作用：
 <p>如何使用</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//外部.m文件引用</div><div class="line">extern NSString *const orderTypeBreakfast;</div></pre></td></tr></table></figure>
 <p><a href="https://www.jianshu.com/p/89656ccfe464" target="_blank" rel="external">https://www.jianshu.com/p/89656ccfe464</a></p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/b37b63b10bff" target="_blank" rel="external">OC中的extern,static,const</a></p>
-<p><a href="https://www.jianshu.com/p/57c2ac02f553" target="_blank" rel="external">iOS中宏与const的区别与const的使用详解</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/57c2ac02f553" target="_blank" rel="external">iOS中宏与const的区别与const的使用详解</a></p>
 <p><a href="https://www.jianshu.com/p/4abe3a968e6b" target="_blank" rel="external">const，extern</a></p>
 <p><a href="https://www.jianshu.com/p/89656ccfe464" target="_blank" rel="external">iOS 关键字const/static/extern、UIKIT_EXTERN区别和用法</a></p>
 
@@ -753,7 +683,7 @@ static的作用：
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#const的作用："><span class="nav-number">1.</span> <span class="nav-text">const的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static的作用："><span class="nav-number">2.</span> <span class="nav-text">static的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#extern的作用"><span class="nav-number">3.</span> <span class="nav-text">extern的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重点"><span class="nav-number">4.</span> <span class="nav-text">重点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏的常见用法："><span class="nav-number">5.</span> <span class="nav-text">宏的常见用法：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-常量"><span class="nav-number">6.</span> <span class="nav-text">const(常量)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏与const的区别"><span class="nav-number">7.</span> <span class="nav-text">宏与const的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">8.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const开发中使用场景"><span class="nav-number">9.</span> <span class="nav-text">const开发中使用场景:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static作用"><span class="nav-number">10.</span> <span class="nav-text">static作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修饰局部变量"><span class="nav-number">10.1.</span> <span class="nav-text">修饰局部变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#extern作用"><span class="nav-number">11.</span> <span class="nav-text">extern作用:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#static与const联合使用"><span class="nav-number"></span> <span class="nav-text">static与const联合使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#extern与const联合使用"><span class="nav-number">1.</span> <span class="nav-text">extern与const联合使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#const变量与define宏定义的区别"><span class="nav-number">1.1.</span> <span class="nav-text">const变量与define宏定义的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#宏的常见用法："><span class="nav-number">1.</span> <span class="nav-text">宏的常见用法：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-常量-的作用："><span class="nav-number">2.</span> <span class="nav-text">const(常量)的作用：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#宏与const的区别"><span class="nav-number">3.</span> <span class="nav-text">宏与const的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">4.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const开发中使用场景"><span class="nav-number">5.</span> <span class="nav-text">const开发中使用场景:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static作用"><span class="nav-number">6.</span> <span class="nav-text">static作用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修饰局部变量"><span class="nav-number">6.1.</span> <span class="nav-text">修饰局部变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#extern作用"><span class="nav-number">7.</span> <span class="nav-text">extern作用:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#static与const联合使用"><span class="nav-number"></span> <span class="nav-text">static与const联合使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#extern与const联合使用"><span class="nav-number">1.</span> <span class="nav-text">extern与const联合使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#const变量与define宏定义的区别"><span class="nav-number">1.1.</span> <span class="nav-text">const变量与define宏定义的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
