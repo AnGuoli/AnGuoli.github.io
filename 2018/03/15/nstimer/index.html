@@ -1,0 +1,731 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
+创建NSTimer创建NSTimer的常用方法是
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nstimer">
+<meta property="og:url" content="http://yoursite.com/2018/03/15/nstimer/index.html">
+<meta property="og:site_name" content="An Guoli's Blog">
+<meta property="og:description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
+创建NSTimer创建NSTimer的常用方法是
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较2.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/invalidate与fire比较.png">
+<meta property="og:updated_time" content="2018-03-15T09:47:29.128Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nstimer">
+<meta name="twitter:description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
+创建NSTimer创建NSTimer的常用方法是
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/15/nstimer/"/>
+
+
+
+
+
+  <title> nstimer | An Guoli's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+<a href="https://github.com/anguoli"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">An Guoli's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/15/nstimer/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="安国立">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="An Guoli's Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="An Guoli's Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                nstimer
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-15T10:16:36+08:00">
+                2018-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>= 选择 GCD 还是 NSTimer ？<br><a href="http://www.jianshu.com/p/0c050af6c5ee" target="_blank" rel="external">http://www.jianshu.com/p/0c050af6c5ee</a></p>
+<h2 id="iOS开发-之-不要告诉我你会用NSTimer"><a href="#iOS开发-之-不要告诉我你会用NSTimer" class="headerlink" title="iOS开发 之 不要告诉我你会用NSTimer!"></a>iOS开发 之 不要告诉我你会用NSTimer!</h2><p><a href="http://www.jianshu.com/p/330d7310339d" target="_blank" rel="external">http://www.jianshu.com/p/330d7310339d</a></p>
+<h2 id="创建NSTimer"><a href="#创建NSTimer" class="headerlink" title="创建NSTimer"></a>创建NSTimer</h2><p>创建NSTimer的常用方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)target selector:(SEL)aSelector userInfo:(id)userInfo repeats:(BOOL)repeats</div></pre></td></tr></table></figure>
+<p>创建NSTimer的不常用方法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)target selector:(SEL)aSelector userInfo:(id)userInfo repeats:(BOOL)repeats</div></pre></td></tr></table></figure>
+<p>和</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)ti target:(id)target selector:(SEL)aSelector userInfo:(id)userInfo repeats:(BOOL)repeats</div></pre></td></tr></table></figure>
+<p>他们的区别很简单:<br><img src="/2018/03/15/nstimer/NSTimer三种创建比较.png" alt="NSTimer三种创建比较"></p>
+<p>scheduledTimerWithTimeInterval相比它的小伙伴们不仅仅是创建了NSTimer对象, 还把该对象加入到了当前的runloop中</p>
+<blockquote>
+<p>NSTimer只有被加入到runloop, 才会生效, 即NSTimer才会被真正执行</p>
+</blockquote>
+<p>所以说, 如果你想使用timerWithTimeInterval或initWithFireDate的话, 需要使用NSRunloop的以下方法将NSTimer加入到runloop中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (void)addTimer:(NSTimer *)aTimer forMode:(NSString *)mode</div></pre></td></tr></table></figure>
+<p><img src="/2018/03/15/nstimer/NSTimer三种创建比较2.png" alt="NSTimer三种创建比较2"></p>
+<h2 id="销毁NSTimer"><a href="#销毁NSTimer" class="headerlink" title="销毁NSTimer"></a>销毁NSTimer</h2><h3 id="invalidate与fire"><a href="#invalidate与fire" class="headerlink" title="invalidate与fire"></a>invalidate与fire</h3><p>我们来看看Apple Documentation对这两个方法的权威解释吧</p>
+<ul>
+<li>invalidate</li>
+</ul>
+<p>Stops the receiver from ever firing again and requests its removal from its run loop</p>
+<p>This method is the only way to remove a timer from an NSRunLoop object</p>
+<ul>
+<li>fire</li>
+</ul>
+<p>Causes the receiver’s message to be sent to its target</p>
+<p>If the timer is non-repeating, it is automatically invalidated after firing</p>
+<p><img src="/2018/03/15/nstimer/invalidate与fire比较.png" alt="invalidate与fire比较"></p>
+<blockquote>
+<p>如果想要销毁NSTimer, 那么一定要调用invalidate方法</p>
+</blockquote>
+<h3 id="invalidate与-nil"><a href="#invalidate与-nil" class="headerlink" title="invalidate与=nil"></a>invalidate与=nil</h3><p>就像销毁其他<strong>强应用</strong>对象一样, 我们是否可以将NSTimer置nil, 而让iOS系统帮我们销毁NSTimer呢?</p>
+<p>Student *student = [[Student alloc]init];</p>
+<pre><code>__block Student *stu = student;
+student.name = @&quot;Hello World&quot;;
+student.study = ^{
+    NSLog(@&quot;my name is = %@&quot;,stu.name);
+    stu = nil;
+};
+
+student.study();
+</code></pre><p>__block不持有student即可。</p>
+<p>timer中的那些坑<br><a href="http://www.jianshu.com/p/544e2e24eda2" target="_blank" rel="external">http://www.jianshu.com/p/544e2e24eda2</a></p>
+<p>深入NSTimer(iOS)<br><a href="http://www.jianshu.com/p/583ca675065a" target="_blank" rel="external">http://www.jianshu.com/p/583ca675065a</a></p>
+<p>iOS笔记之NSTimer<br><a href="http://www.jianshu.com/p/d17430f4fc0f" target="_blank" rel="external">http://www.jianshu.com/p/d17430f4fc0f</a></p>
+<p>更可靠和高精度的 iOS 定时器<br>NSTimer / NSObject 的 (void)performSelector:(SEL)aSelector withObject:(id)anArgument afterDelay:(NSTimeInterval)delay; / CADisplayLink / GCD 的 dispatch_after / GCD 的 dispatch_source_t</p>
+<p><a href="http://blog.lessfun.com/blog/2016/08/05/reliable-timer-in-ios/" target="_blank" rel="external">http://blog.lessfun.com/blog/2016/08/05/reliable-timer-in-ios/</a></p>
+<p>第52条：别忘了NSTimer会保留其目标对象<br><a href="https://www.jianshu.com/p/bfaad0dee84b" target="_blank" rel="external">https://www.jianshu.com/p/bfaad0dee84b</a></p>
+<p>iOS 中的 NSTimer<br><a href="https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/" target="_blank" rel="external">https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/</a></p>
+<p>5.NStimer准吗？谈谈你的看法？如果不准该怎样实现一个精确的NSTimer?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">1.不准</div><div class="line">2.不准的原因如下：</div><div class="line">1、NSTimer加在main runloop中，模式是NSDefaultRunLoopMode，main负责所有主线程事件，例如UI界面的操作，复杂的运算，这样在同一个runloop中timer就会产生阻塞。</div><div class="line">2、模式的改变。主线程的 RunLoop 里有两个预置的 Mode：kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。</div><div class="line">当你创建一个 Timer 并加到 DefaultMode 时，Timer 会得到重复回调，但此时滑动一个ScrollView时，RunLoop 会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被回调，并且也不会影响到滑动操作。所以就会影响到NSTimer不准的情况。</div><div class="line">PS:DefaultMode 是 App 平时所处的状态，rackingRunLoopMode 是追踪 ScrollView 滑动时的状态。</div><div class="line">方法一：</div><div class="line">1、在主线程中进行NSTimer操作，但是将NSTimer实例加到main runloop的特定mode（模式）中。避免被复杂运算操作或者UI界面刷新所干扰。</div><div class="line">self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(showTime) userInfo:nil repeats:YES];</div><div class="line">[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];</div><div class="line">2、在子线程中进行NSTimer的操作，再在主线程中修改UI界面显示操作结果；</div><div class="line">- (void)timerMethod2 &#123;</div><div class="line">NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(newThread) object:nil];</div><div class="line">[thread start];</div><div class="line">&#125;</div><div class="line">- (void)newThread</div><div class="line">&#123;</div><div class="line">@autoreleasepool</div><div class="line">&#123;</div><div class="line">[NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(showTime) userInfo:nil repeats:YES];</div><div class="line">[[NSRunLoop currentRunLoop] run];</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">总结：</div><div class="line">一开始的时候系统就为我们将主线程的main runloop隐式的启动了。</div><div class="line">在创建线程的时候，可以主动获取当前线程的runloop。每个子线程对应一个runloop</div><div class="line">方法二：</div><div class="line">使用示例</div><div class="line">使用mach内核级的函数可以使用mach_absolute_time()获取到CPU的tickcount的计数值，可以通过”mach_timebase_info”函数获取到纳秒级的精确度 。然后使用mach_wait_until(uint64_t deadline)函数，直到指定的时间之后，就可以执行指定任务了。</div><div class="line">关于数据结构mach_timebase_info的定义如下：</div><div class="line">struct mach_timebase_info &#123;uint32_t numer;uint32_t denom;&#125;;</div><div class="line">#include</div><div class="line">#include</div><div class="line">static const uint64_t NANOS_PER_USEC = 1000ULL;</div><div class="line">static const uint64_t NANOS_PER_MILLISEC = 1000ULL * NANOS_PER_USEC;</div><div class="line">static const uint64_t NANOS_PER_SEC = 1000ULL * NANOS_PER_MILLISEC;</div><div class="line">static mach_timebase_info_data_t timebase_info;</div><div class="line">static uint64_t nanos_to_abs(uint64_t nanos) &#123;</div><div class="line">return nanos * timebase_info.denom / timebase_info.numer;</div><div class="line">&#125;</div><div class="line">void example_mach_wait_until(int seconds)</div><div class="line">&#123;</div><div class="line">mach_timebase_info(&amp;timebase_info);</div><div class="line">uint64_t time_to_wait = nanos_to_abs(seconds * NANOS_PER_SEC);</div><div class="line">uint64_t now = mach_absolute_time();</div><div class="line">mach_wait_until(now + time_to_wait);</div><div class="line">&#125;</div><div class="line">方法三：直接使用GCD替代！</div></pre></td></tr></table></figure>
+<p>面试时如何优雅的谈论OC</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">轮播图中的NSTimer问题</div><div class="line"></div><div class="line">创建定时器：</div><div class="line"> 1：NSTimer *timer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此方法创建的定时器，必须加到NSRunLoop中。</div><div class="line">NSRunLoop *runLoop = [NSRunLoop currentRunLoop]; </div><div class="line">[runLoop addTimer:timer forMode: NSRunLoopCommonModes];</div><div class="line"> forMode的参数有两种类型可供选择： NSDefaultRunLoopMode ， NSRunLoopCommonModes，第一个参数为默认参数，当下面有textView，textfield等控件时，拖拽控件，此时轮播器会停止轮播，是因为NSRunLoop的原因，NSRunLoop为一个死循环，实时监测有无事件响应，如果当前线程就是主线程，也就是UI线程时，某些UI事件，比如UIScrollView的拖动操作，会将Run Loop切换成NSEventTrackingRunLoopMode模式，在这个过程中，默认的NSDefaultRunLoopMode模式中注册的事件是不会被执行的。NSRunLoopCommonModes 能够在多线程中起作用，这个模式等效于NSDefaultRunLoopMode和NSEventTrackingRunLoopMode的结合，这也是将modes换为NSRunLoopCommonModes便可解决的原因。</div><div class="line">2： self.timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此种创建定时器的方式，默认加到了runloop。</div></pre></td></tr></table></figure>
+<p>那些著名或非著名的iOS面试题－后编<br>4.NSTimer创建后，会在哪个线程运行。</p>
+<p>用scheduledTimerWithTimeInterval创建的，在哪个线程创建就会被加入哪个线程的RunLoop中就运行在哪个线程。<br>自己创建的Timer，加入到哪个线程的RunLoop中就运行在哪个线程。</p>
+<h2 id="NSTimer-不精确-正确的使用姿势"><a href="#NSTimer-不精确-正确的使用姿势" class="headerlink" title="NSTimer 不精确 正确的使用姿势"></a>NSTimer 不精确 正确的使用姿势</h2><p>RunLoop<br>timerWithTimeInterval scheduledTimerWithTimeInterval</p>
+<h2 id="和其他定时器的对比"><a href="#和其他定时器的对比" class="headerlink" title="和其他定时器的对比"></a>和其他定时器的对比</h2><h2 id="隐患-内存泄漏-循环引用"><a href="#隐患-内存泄漏-循环引用" class="headerlink" title="隐患 内存泄漏 循环引用"></a>隐患 内存泄漏 循环引用</h2><p>强引用</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/12/runloop/" rel="next" title="RunLoop">
+                <i class="fa fa-chevron-left"></i> RunLoop
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg"
+               alt="安国立" />
+          <p class="site-author-name" itemprop="name">安国立</p>
+          <p class="site-description motion-element" itemprop="description">留给中国队的时间不多了</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">22</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/AnGuoli" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a1678e7f265da432c23856e" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-joomla"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/98bd5a3ecd08" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-jsfiddle"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS开发-之-不要告诉我你会用NSTimer"><span class="nav-number">1.</span> <span class="nav-text">iOS开发 之 不要告诉我你会用NSTimer!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建NSTimer"><span class="nav-number">2.</span> <span class="nav-text">创建NSTimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#销毁NSTimer"><span class="nav-number">3.</span> <span class="nav-text">销毁NSTimer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与fire"><span class="nav-number">3.1.</span> <span class="nav-text">invalidate与fire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与-nil"><span class="nav-number">3.2.</span> <span class="nav-text">invalidate与=nil</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSTimer-不精确-正确的使用姿势"><span class="nav-number">4.</span> <span class="nav-text">NSTimer 不精确 正确的使用姿势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#和其他定时器的对比"><span class="nav-number">5.</span> <span class="nav-text">和其他定时器的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐患-内存泄漏-循环引用"><span class="nav-number">6.</span> <span class="nav-text">隐患 内存泄漏 循环引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安国立</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
