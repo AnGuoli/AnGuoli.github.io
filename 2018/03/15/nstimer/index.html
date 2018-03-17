@@ -99,7 +99,7 @@ iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d73103
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较2.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/invalidate与fire比较.png">
-<meta property="og:updated_time" content="2018-03-15T09:47:29.128Z">
+<meta property="og:updated_time" content="2018-03-17T07:46:05.024Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nstimer">
 <meta name="twitter:description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
@@ -376,7 +376,7 @@ iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d73103
 <blockquote>
 <p>如果想要销毁NSTimer, 那么一定要调用invalidate方法</p>
 </blockquote>
-<h3 id="invalidate与-nil"><a href="#invalidate与-nil" class="headerlink" title="invalidate与=nil"></a>invalidate与=nil</h3><p>就像销毁其他<strong>强应用</strong>对象一样, 我们是否可以将NSTimer置nil, 而让iOS系统帮我们销毁NSTimer呢?</p>
+<h3 id="invalidate与-nil"><a href="#invalidate与-nil" class="headerlink" title="invalidate与=nil"></a>invalidate与=nil</h3><p>就像销毁其他<strong>强引用</strong>对象一样, 我们是否可以将NSTimer置nil, 而让iOS系统帮我们销毁NSTimer呢?</p>
 <p>Student *student = [[Student alloc]init];</p>
 <pre><code>__block Student *stu = student;
 student.name = @&quot;Hello World&quot;;
@@ -438,8 +438,8 @@ student.study();
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/03/17/Retain-Circle/" rel="prev" title="Retain-Circle">
-                Retain-Circle <i class="fa fa-chevron-right"></i>
+              <a href="/2018/03/17/Retain-Circle/" rel="prev" title="强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf">
+                强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -508,7 +508,7 @@ student.study();
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">24</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

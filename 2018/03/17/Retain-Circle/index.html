@@ -84,16 +84,27 @@
 
 
 
-<meta name="description" content="留给中国队的时间不多了">
+<meta name="description" content="强引用和弱引用：OC中的内存管理是通过“引用计数器”来实现的。一个对象的生命周期取决于它是否还被其他对象引用（是否retainCount=0）。但在有些情况下，我们并不希望对象的销毁时间由是否被其他对象引用来决定，而是这个对象本该是什么时候销毁就什么时候被销毁。这时，我们得引入“强引用”和“弱引用”的概念。
+强引用：当前对象被其他对象引用时，会执行retain操作，引用计数器+1。当retainC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Retain-Circle">
+<meta property="og:title" content="强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf">
 <meta property="og:url" content="http://yoursite.com/2018/03/17/Retain-Circle/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="留给中国队的时间不多了">
-<meta property="og:updated_time" content="2018-03-16T16:05:38.766Z">
+<meta property="og:description" content="强引用和弱引用：OC中的内存管理是通过“引用计数器”来实现的。一个对象的生命周期取决于它是否还被其他对象引用（是否retainCount=0）。但在有些情况下，我们并不希望对象的销毁时间由是否被其他对象引用来决定，而是这个对象本该是什么时候销毁就什么时候被销毁。这时，我们得引入“强引用”和“弱引用”的概念。
+强引用：当前对象被其他对象引用时，会执行retain操作，引用计数器+1。当retainC">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/weak:strong.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/weak.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/子视图父视图.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/以UIButton为例.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/控件也会随之销毁.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/delegate-weak.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/17/Retain-Circle/block-cycle.jpg">
+<meta property="og:updated_time" content="2018-03-17T09:33:30.181Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Retain-Circle">
-<meta name="twitter:description" content="留给中国队的时间不多了">
+<meta name="twitter:title" content="强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf">
+<meta name="twitter:description" content="强引用和弱引用：OC中的内存管理是通过“引用计数器”来实现的。一个对象的生命周期取决于它是否还被其他对象引用（是否retainCount=0）。但在有些情况下，我们并不希望对象的销毁时间由是否被其他对象引用来决定，而是这个对象本该是什么时候销毁就什么时候被销毁。这时，我们得引入“强引用”和“弱引用”的概念。
+强引用：当前对象被其他对象引用时，会执行retain操作，引用计数器+1。当retainC">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/17/Retain-Circle/weak:strong.jpg">
 
 
 
@@ -127,7 +138,7 @@
 
 
 
-  <title> Retain-Circle | An Guoli's Blog </title>
+  <title> 强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf | An Guoli's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -283,7 +294,7 @@
             
             
               
-                Retain-Circle
+                强引用(weak)、弱引用(strong)、dalegate/block/NSTimer中的循环引用、weakSelf、strongSelf
               
             
           </h1>
@@ -332,7 +343,112 @@
       
 
       
-        
+        <h2 id="强引用和弱引用："><a href="#强引用和弱引用：" class="headerlink" title="强引用和弱引用："></a>强引用和弱引用：</h2><p>OC中的内存管理是通过“引用计数器”来实现的。一个对象的生命周期取决于它是否还被其他对象引用（是否retainCount=0）。但在有些情况下，我们并不希望对象的销毁时间由是否被其他对象引用来决定，而是这个对象本该是什么时候销毁就什么时候被销毁。这时，我们得引入“强引用”和“弱引用”的概念。</p>
+<h3 id="强引用："><a href="#强引用：" class="headerlink" title="强引用："></a>强引用：</h3><p>当前对象被其他对象引用时，会执行retain操作，引用计数器+1。当retainCount=0时，该对象才会被销毁。因为我们要进行对象的内存管理，所以这是默认的引用方式。（默认是强引用）</p>
+<h3 id="弱引用："><a href="#弱引用：" class="headerlink" title="弱引用："></a>弱引用：</h3><p>当前对象的生命周期不被是否由其他对象引用限制，它本该什么时候销毁就什么时候被销毁。即使它的引用没断，但是当它的生存周期到了时就会被销毁。</p>
+<h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><blockquote>
+<p>强引用持有对象;弱引用不持有对象。</p>
+<p><strong>强引用可以释放对象，但弱引用不可以，因为弱引用不持有对象，当弱引用指向一个强引用所持有的对象时，当强引用将对象释放掉后，弱引用会自动的被赋值为nil，即弱引用会自动的指向nil。</strong></p>
+<p>在强引用中，有时会出现循环引用的情况，这时就需要弱引用来帮忙（__weak）。</p>
+</blockquote>
+<h3 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h3><p>当最后一个指向对象的的strong类型的指针离开，这个对象将被释放，如果这个时候还有weak指针指向该对象，则会清除所有剩余的weak指针。</p>
+<p>weak指针不持有对象，不影响对象的retainCount。</p>
+<p><img src="/2018/03/17/Retain-Circle/weak:strong.jpg" alt="weak/strong"><br>气球只有被牵着才不会飞走，牵气球的角色有两种：1、弱者-太弱，拉不动，只能在旁边看着，只能作为观察者和使用者，可以有多个。2、强者-拥有气球，负责掌握牵扯气球的线，可以有多个，并且每个都会独自拥有一条牵扯的线。</p>
+<p>当所有的线都消失(被剪断)的情况下，气球就会飞走消失。</p>
+<p>只有当所有的强者手中的线都间断的时候，才会导致气球消失，而这个时候是不论弱者有多少，都没有任何作用。而所有的弱者都消失时，只要有一个强者还在，那么气球就不会消失。</p>
+<p>弱者-weak引用，强者-strong引用</p>
+<p><a href="https://www.jianshu.com/p/dc988503e96d" target="_blank" rel="external">iOS*内存管理-强引用与弱引用</a></p>
+<p><img src="/2018/03/17/Retain-Circle/weak.png" alt=""></p>
+<p>在定义属性时，若声明为<code>retain</code>类型的，则就是<strong>强引用</strong>；若声明为<code>assign</code>类型的，则就是<strong>弱引用</strong>。</p>
+<p>后来内存管理都由ARC来完成后，若是<strong>强引用</strong>，则就声明为<code>strong</code>；若是<strong>弱引用</strong>，则就声明为<code>weak</code>。</p>
+<p>所以说，retain和strong是一致的（声明为强引用）</p>
+<p>assign和weak是基本一致的（声明为弱引用）。 </p>
+<p>之所以说它俩是基本一致是因为它俩还是有所不同的，<strong>weak严格的说应当叫“ 归零弱引用 ”，即当对象被销毁后，会自动的把它的指针置为nil，这样可以防止野指针错误。而assign销毁对象后不会把该对象的指针置nil，对象已经被销毁，但指针还在痴痴的指向它，这就成了野指针，这是比较危险的。</strong></p>
+<p>weak只能修饰对象类型;assign一般用来修饰基础数据类型(NSInteger,CGFloat等)和C数据类型(int,float,double)等。</p>
+<h2 id="todo-52个方法"><a href="#todo-52个方法" class="headerlink" title="todo - 52个方法"></a>todo - 52个方法</h2><p>unsafe_retain assign</p>
+<h2 id="避免“强引用循环“的僵局："><a href="#避免“强引用循环“的僵局：" class="headerlink" title="避免“强引用循环“的僵局："></a>避免“强引用循环“的僵局：</h2><p>默认的引用方式是强引用，但上面说了有时我们还得使用弱引用，那是什么情况呢？</p>
+<p>答案，强引用循环：A对象强引用了B对象，B对象也强引用了A。因为都是强引用，也就是无论是A是B都要在对方的引用断了后才能销毁，但要断了引用，就必须对方对象销毁。就会出现这种僵局，为了避免出现这种情况，就应该有一个对象“示弱”，使其为“弱引用”。</p>
+<p>由于要进行内存管理的缘故，OC里的引用默认都是强引用，但为了避免出现”强引用循环僵局“，所以有了弱引用（assign/weak）。</p>
+<p>比较常见的，视图中的父子视图之间的引用：<strong>父视图强引用子视图，子视图弱引用父视图。</strong></p>
+<p><img src="/2018/03/17/Retain-Circle/子视图父视图.png" alt="父视图子视图"></p>
+<h2 id="为什么IBOutlet属性是weak的？"><a href="#为什么IBOutlet属性是weak的？" class="headerlink" title="为什么IBOutlet属性是weak的？"></a>为什么IBOutlet属性是weak的？</h2><p>因为当我们将控件拖到Storyboard上，相当于新创建了一个对象，而这个对象是加到视图控制器的view上，view有一个subViews属性，这个属性是一个数组，里面是这个view的所有子view，而我们加的控件就位于这个数组中，那么说明，实际上我们的控件对象是属于view的，也就是说view对加到它上面的控件是强引用。当我们使用Outlet属性的时候，我们是在viewController里面使用，而这个Outlet属性是有view来进行强引用的，我们在viewController里面仅仅是对其使用，并没有必要拥有它，所以是weak的。</p>
+<p>以UIButton为例：UIViewController-&gt;UIView-&gt;UIButton</p>
+<p><img src="/2018/03/17/Retain-Circle/以UIButton为例.png" alt="以UIButton为例"></p>
+<p>可以改成 strong 吗？</p>
+<p>如果将weak改为strong，也是没有问题的，并不会造成强引用循环。当viewController的指针指向其他对象或者为nil，这个viewController销毁，那么对控件就少了一个强引用指针。然后它的view也随之销毁，那么subViews也不存在了，那么控件就又少了一个强引用指针，如果没有其他强引用，那么这个控件也会随之销毁。</p>
+<p><img src="/2018/03/17/Retain-Circle/控件也会随之销毁.jpg" alt="控件也会随之销毁"></p>
+<p><a href="https://www.jianshu.com/p/204e931f2b68" target="_blank" rel="external">IBOutlet的视图属性为什么被设置成weak?可以改成 strong 吗？</a></p>
+<h2 id="delegate属性为什么用weak修饰"><a href="#delegate属性为什么用weak修饰" class="headerlink" title="delegate属性为什么用weak修饰?"></a>delegate属性为什么用weak修饰?</h2><p>案例说明:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">案例中的类介绍: 案例共用到三个类,Passenger类(乘客类),Driver类(保姆类),ViewControllr类(控制器类),其中说明问题的关键是之前两个类.</div><div class="line">    假设,乘客类要想做一些事情(像开车,停车,转弯之类的...)就必须具有代理的属性,因此指定了一个协议&lt;PassengerDelegate&gt;,合情合理.而司机需要成为乘客的代理,必须遵循协议</div></pre></td></tr></table></figure>
+<p>1.Passenger类 Passenger.h文件</p>
+<p>乘客拥有一个代理的属性.并且用修饰词weak修饰的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// 制定协议</div><div class="line">@protocol PassengerDelegate &lt;NSObject&gt;</div><div class="line">//这里可以编写代理方法(该案例中用不到所以就不写了)</div><div class="line">@end</div><div class="line"></div><div class="line">@interface Passenger : NSObject</div><div class="line">/**</div><div class="line"> *  乘客Passenger的代理属性(这里用的是weak修饰,正确的做法)</div><div class="line"> */</div><div class="line">@property(nonatomic, weak) id&lt;PassengerDelegate&gt;delegate;</div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>2.Passenger类 Passenger.m文件</p>
+<p>当该类的对象被销毁时会调用-dealloc方法(在这个案例中用来观察对象是否被销毁了)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@implementation Passenger</div><div class="line">- (void)dealloc</div><div class="line">&#123;</div><div class="line">    NSLog(@&quot;Passenger类被销毁了&quot;);</div><div class="line">&#125;</div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>3.Driver类 Driver.m文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">//Driver类也就是司机必须遵循代理协议 </div><div class="line">@interface Driver()&lt;PassengerDelegate&gt;</div><div class="line">//并有一个需要服务的Passenger</div><div class="line">@property(nonatomic, strong) Passenger *passenger;</div><div class="line"></div><div class="line">@end</div><div class="line"></div><div class="line">@implementation Driver</div><div class="line"></div><div class="line">//初始化方法</div><div class="line">- (instancetype)init</div><div class="line">&#123;</div><div class="line"> self = [super init];</div><div class="line"></div><div class="line">    if (self) &#123;</div><div class="line">    // 初始化&apos;乘客&apos;对象</div><div class="line">    self.psger = [[Passenger alloc]init];</div><div class="line">    // 设置&apos;自己(Driver)&apos;为(Passenger)类的代理</div><div class="line">    self.passenger.delegate = self;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> return self;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>4.我们介绍最后一个类 ViewController类</p>
+<p>在ViewController的方法ViewDidLoad中创建司机对象,并且该对象作用的范围是这个方法内部.这个方法执行完成,driver对象就会被销毁了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line"></div><div class="line">    Driver *driver = [[Driver alloc]init];</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>上面的代码执行完成之后,运行结果如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Driver类被销毁了</div><div class="line">Passenger类被销毁了</div><div class="line">    </div><div class="line">    </div><div class="line">这就说明Driver对象和Passenger对象在没有用处之后都会被销毁,但是如果用代理用strong修饰,而不是用weak修饰,则不会打印上面的结果!</div></pre></td></tr></table></figure>
+<p>分析:</p>
+<p><img src="/2018/03/17/Retain-Circle/delegate-weak.png" alt="delegate-weak"></p>
+<p>使用weak在程序运行的时候不会造成循环引用,对象都会被顺利的销毁,所以会调用司机类和乘客类的delloc方法</p>
+<p>使用strong在程序运行的时候会造成循环引用(reatainCount不为0,只要有强引用,计数器就+1),对象都不会的销毁,所以司机类和乘客类不会调用delloc方法,从而造成了内存泄露的问题</p>
+<h2 id="block中的循环引用"><a href="#block中的循环引用" class="headerlink" title="block中的循环引用"></a>block中的循环引用</h2><p>题外话:block为什么用copy?</p>
+<p>block是一个对象,所以block在创建的时候内存是默认在stack(栈)上的. 而不是在heap(堆)上的.所以他的作用域仅限创建时候的当前上下文(函数,方法等),当在作用域外调用block就会崩溃. Copy可以将block从内存栈区移动到堆区.这样在作用域外也不会崩溃了. 但在ARC下, 使用copy与strong其实都一样, 因为block的retain就是用copy来实现的.block还是建议使用copy修饰.因为MRC下就是就是用copy修饰的.</p>
+<p><a href="https://www.jianshu.com/p/9a6e00a54b6c" target="_blank" rel="external">https://www.jianshu.com/p/9a6e00a54b6c</a></p>
+<p>当A对象里面强引用了B对象，B对象又强引用了A对象，这样两者的retainCount值一直都无法为0，于是内存始终无法释放，导致内存泄露。所谓的内存泄露就是本应该释放的对象，在其生命周期结束之后依旧存在。</p>
+<p>当然也存在自身引用自身的，当一个对象内部的一个obj，强引用的自身，也会导致循环引用的问题出现。常见的就是block里面引用的问题。</p>
+<p><img src="/2018/03/17/Retain-Circle/block-cycle.jpg" alt=""></p>
+<p>我们使用<strong>block解决循环引用虽然可以控制对象持有时间，在block中还能动态的控制是</strong>block变量的值，可以赋值nil，也可以赋值其他的值，但是有一个唯一的缺点就是需要执行一次block才行。否则还是会造成循环引用。</p>
+<p><strong>值得注意的是，在ARC下__block会导致对象被retain，有可能导致循环引用。而在MRC下，则不会retain这个对象，也不会导致循环引用.</strong></p>
+<h3 id="weakSelf-和-strongSelf"><a href="#weakSelf-和-strongSelf" class="headerlink" title="weakSelf 和 strongSelf"></a>weakSelf 和 strongSelf</h3><p><strong>1.weakSelf</strong></p>
+<p><code>__weak __typeof(self)weakSelf = self;</code> 这是AFN里面的写法。。</p>
+<p><code>#define WEAKSELF typeof(self) __weak weakSelf = self;</code> 这是我们平时的写法。。</p>
+<p>区分__typeof() 和 typeof(): 其实两者都是一样的东西，只不过是C里面不同的标准，兼容性不同罢了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#define WEAKSELF __weak typeof(self)weakSelf = self;</div><div class="line">#define WEAKSELF typeof(self) __weak weakSelf = self;</div></pre></td></tr></table></figure>
+<p>这两种写法就是完全一样的。</p>
+<p>我们可以用WEAKSELF来解决block循环引用的问题</p>
+<p>假设自定义的一个student类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">#import &lt;Foundation/Foundation.h&gt;</div><div class="line">typedef void(^Study)();</div><div class="line">@interface Student : NSObject</div><div class="line">@property (copy , nonatomic) NSString *name;</div><div class="line">@property (copy , nonatomic) Study study;</div><div class="line">@end</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">#import &quot;ViewController.h&quot;</div><div class="line">#import &quot;Student.h&quot;</div><div class="line"></div><div class="line">@interface ViewController ()</div><div class="line">@end</div><div class="line"></div><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line">  </div><div class="line">    Student *student = [[Student alloc]init];</div><div class="line">    student.name = @&quot;Hello World&quot;;</div><div class="line"></div><div class="line">    student.study = ^&#123;</div><div class="line">        NSLog(@&quot;my name is = %@&quot;,student.name);</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里肯定出现了循环引用了。student的study的Block里面强引用了student自身。根据<a href="https://www.jianshu.com/p/ee9756f3d5f6" target="_blank" rel="external">深入研究Block捕获外部变量和__block实现原理</a>的分析，可以知道，_NSConcreteMallocBlock(存在堆里)捕获了外部的对象，会在内部持有它。retainCount值会加一。(强引用)</p>
+<p>这里形成环的原因block里面持有student本身，student本身又持有block。</p>
+<p>如下, 就能解决循环引用的问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">#import &quot;ViewController.h&quot;</div><div class="line">#import &quot;Student.h&quot;</div><div class="line"></div><div class="line">@interface ViewController ()</div><div class="line">@end</div><div class="line"></div><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line"></div><div class="line">    Student *student = [[Student alloc]init];</div><div class="line">    student.name = @&quot;Hello World&quot;;</div><div class="line">    __weak typeof(student) weakSelf = student;</div><div class="line">    </div><div class="line">    student.study = ^&#123;</div><div class="line">        NSLog(@&quot;my name is = %@&quot;,weakSelf.name);</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    student.study();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="为什么iOS的Masonry中的self不会循环引用"><a href="#为什么iOS的Masonry中的self不会循环引用" class="headerlink" title="为什么iOS的Masonry中的self不会循环引用?"></a>为什么iOS的Masonry中的self不会循环引用?</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">UIButton *testButton = [[UIButton alloc] init];</div><div class="line">[self.view addSubview:testButton];</div><div class="line">testButton.backgroundColor = [UIColor redColor];</div><div class="line">[testButton mas_makeConstraints:^(MASConstraintMaker *make) &#123;</div><div class="line">    make.width.equalTo(@100);</div><div class="line">    make.height.equalTo(@100);</div><div class="line">    make.left.equalTo(self.view.mas_left);</div><div class="line">    make.top.equalTo(self.view.mas_top);</div><div class="line">&#125;];</div><div class="line">[testButton bk_addEventHandler:^(id sender) &#123;</div><div class="line">    [self dismissViewControllerAnimated:YES completion:nil];</div><div class="line">&#125; forControlEvents:UIControlEventTouchUpInside];</div></pre></td></tr></table></figure>
+<p>看到这里，读者应该就应该能回答这个问题了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- (NSArray *)mas_makeConstraints:(void(^)(MASConstraintMaker *))block &#123;</div><div class="line">    self.translatesAutoresizingMaskIntoConstraints = NO;</div><div class="line">    MASConstraintMaker *constraintMaker = [[MASConstraintMaker alloc] initWithView:self];</div><div class="line">    block(constraintMaker);</div><div class="line">    return [constraintMaker install];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>关于 Masonry ，它内部会引用变量 self，然后对其执行了<code>setTranslatesAutoresizingMaskIntoConstraints:</code>方法, 进入block的是self.view，闭包虽然引用了self，但是self并没有引用这个闭包，执行完毕后，block会被销毁，没有形成环, 所以，没有引起循环依赖。</p>
+<p><strong>2.strongSelf</strong></p>
+<p>如果block里面不加<strong>strong </strong>typeof(weakSelf)strongSelf = weakSelf会如何呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">#import &quot;ViewController.h&quot;</div><div class="line">#import &quot;Student.h&quot;</div><div class="line"></div><div class="line">@interface ViewController ()</div><div class="line">@end</div><div class="line"></div><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line"></div><div class="line">    Student *student = [[Student alloc]init];</div><div class="line">    student.name = @&quot;Hello World&quot;;</div><div class="line">    __weak typeof(student) weakSelf = student;</div><div class="line">    </div><div class="line">    student.study = ^&#123;</div><div class="line">        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^&#123;</div><div class="line">            NSLog(@&quot;my name is = %@&quot;,weakSelf.name);</div><div class="line">        &#125;);</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    student.study();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">my name is = (null)</div></pre></td></tr></table></figure>
+<p>重点就在dispatch_after这个函数里面。在study()的block结束之后，student被自动释放了。又由于dispatch_after里面捕获的 <strong>weak 的 student ，根据第二章讲过的</strong>weak的实现原理，在原对象释放之后，<strong>weak对象就会变成null(对应的</strong>weak对象就会被指为nil)，防止野指针。所以就输出了null了。</p>
+<p>那么我们怎么才能在weakSelf之后，block里面还能继续使用weakSelf之后的对象呢？</p>
+<p>究其根本原因就是weakSelf之后，无法控制什么时候会被释放，为了保证在block内不会被释放，需要添加__strong。</p>
+<p>在block里面使用的__strong修饰的weakSelf是为了在函数生命周期中防止self提前释放。strongSelf是一个自动变量当block执行完毕就会释放自动变量strongSelf不会对self进行一直进行强引用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">#import &quot;ViewController.h&quot;</div><div class="line">#import &quot;Student.h&quot;</div><div class="line"></div><div class="line">@interface ViewController ()</div><div class="line">@end</div><div class="line"></div><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line"></div><div class="line">    Student *student = [[Student alloc]init];</div><div class="line">    </div><div class="line">    student.name = @&quot;Hello World&quot;;</div><div class="line">    __weak typeof(student) weakSelf = student;</div><div class="line">    </div><div class="line">    student.study = ^&#123;</div><div class="line">        __strong typeof(student) strongSelf = weakSelf;</div><div class="line">        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^&#123;</div><div class="line">            NSLog(@&quot;my name is = %@&quot;,strongSelf.name);</div><div class="line">        &#125;);</div><div class="line">        </div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    student.study();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">my name is = Hello World</div></pre></td></tr></table></figure>
+<h3 id="weakSelf、strongSelf的用途"><a href="#weakSelf、strongSelf的用途" class="headerlink" title="weakSelf、strongSelf的用途"></a>weakSelf、strongSelf的用途</h3><p>weakSelf 是为了block不持有self，避免Retain Circle循环引用。在 Block 内如果需要访问 self 的方法、变量，建议使用 weakSelf。</p>
+<p>strongSelf的目的是因为一旦进入block执行，假设不允许self在这个执行过程中释放，就需要加入strongSelf。block执行完后这个 strongSelf 会自动释放，没有不会存在循环引用问题。如果在 Block 内需要多次 访问 self，则需要使用 strongSelf。</p>
+<p>关于Retain Circle最后总结一下，有3种方式可以解决循环引用。</p>
+<p>《Effective Objective-C 2.0》(编写高质量iOS与OS X代码的52个有效方法)有介绍</p>
+<h3 id="weakify、-strongify实现原理"><a href="#weakify、-strongify实现原理" class="headerlink" title="@weakify、@strongify实现原理"></a>@weakify、@strongify实现原理</h3><p>@weakify、@strongify，这两个关键字是RAC中避免Block循环引用而开发的2个宏</p>
+<p>@weakify、@strongify的作用和weakSelf、strongSelf对应的一样。</p>
+<p>总结一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@weakify(self) = @autoreleasepool&#123;&#125; __weak __typeof__ (self) self_weak_ = self;</div><div class="line"></div><div class="line">@strongify(self) = @autoreleasepool&#123;&#125; __strong __typeof__(self) self = self_weak_;</div></pre></td></tr></table></figure>
+<p>经过分析以后，其实@weakify(self) 和 @strongify(self) 就是比我们日常写的weakSelf、strongSelf多了一个@autoreleasepool{}而已</p>
+<p><a href="https://www.jianshu.com/p/701da54bd78c" target="_blank" rel="external">深入研究Block用weakSelf、strongSelf、@weakify、@strongify解决循环引用</a></p>
+<h2 id="NSTimer中的循环引用"><a href="#NSTimer中的循环引用" class="headerlink" title="NSTimer中的循环引用"></a>NSTimer中的循环引用</h2><p><a href="https://www.jianshu.com/p/92856bd3949b" target="_blank" rel="external">iOS－－强引用，弱引用 及strong, weak,retain,copy,assign的关系
+</a> </p>
+<p><a href="https://www.jianshu.com/p/3acead54e33c" target="_blank" rel="external">关于iOS的强引用，弱引用及strong,retain,copy,weak,assign的关系</a></p>
+
       
     </div>
 
@@ -367,6 +483,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/17/block/" rel="prev" title="block">
+                block <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -413,8 +533,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="http://ofutv2nt8.bkt.clouddn.com/blog/image/xiamu.jpeg"
@@ -425,7 +554,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">24</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -496,6 +625,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#强引用和弱引用："><span class="nav-number">1.</span> <span class="nav-text">强引用和弱引用：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#强引用："><span class="nav-number">1.1.</span> <span class="nav-text">强引用：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#弱引用："><span class="nav-number">1.2.</span> <span class="nav-text">弱引用：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特点："><span class="nav-number">1.3.</span> <span class="nav-text">特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#理解"><span class="nav-number">1.4.</span> <span class="nav-text">理解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#todo-52个方法"><span class="nav-number">2.</span> <span class="nav-text">todo - 52个方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免“强引用循环“的僵局："><span class="nav-number">3.</span> <span class="nav-text">避免“强引用循环“的僵局：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么IBOutlet属性是weak的？"><span class="nav-number">4.</span> <span class="nav-text">为什么IBOutlet属性是weak的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delegate属性为什么用weak修饰"><span class="nav-number">5.</span> <span class="nav-text">delegate属性为什么用weak修饰?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#block中的循环引用"><span class="nav-number">6.</span> <span class="nav-text">block中的循环引用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#weakSelf-和-strongSelf"><span class="nav-number">6.1.</span> <span class="nav-text">weakSelf 和 strongSelf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么iOS的Masonry中的self不会循环引用"><span class="nav-number">6.2.</span> <span class="nav-text">为什么iOS的Masonry中的self不会循环引用?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weakSelf、strongSelf的用途"><span class="nav-number">6.3.</span> <span class="nav-text">weakSelf、strongSelf的用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weakify、-strongify实现原理"><span class="nav-number">6.4.</span> <span class="nav-text">@weakify、@strongify实现原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSTimer中的循环引用"><span class="nav-number">7.</span> <span class="nav-text">NSTimer中的循环引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
