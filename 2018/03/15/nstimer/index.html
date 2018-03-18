@@ -84,28 +84,34 @@
 
 
 
-<meta name="description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+<meta name="description" content="选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+内存管理
 iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
 创建NSTimer创建NSTimer的常用方法是
-1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTim">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nstimer">
 <meta property="og:url" content="http://yoursite.com/2018/03/15/nstimer/index.html">
 <meta property="og:site_name" content="An Guoli's Blog">
-<meta property="og:description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+<meta property="og:description" content="选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+内存管理
 iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
 创建NSTimer创建NSTimer的常用方法是
-1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTim">
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较2.png">
 <meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/invalidate与fire比较.png">
-<meta property="og:updated_time" content="2018-03-17T07:46:05.024Z">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer4.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer5.png">
+<meta property="og:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer6.png">
+<meta property="og:updated_time" content="2018-03-18T15:51:00.467Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nstimer">
-<meta name="twitter:description" content="= 选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+<meta name="twitter:description" content="选择 GCD 还是 NSTimer ？http://www.jianshu.com/p/0c050af6c5ee
+内存管理
 iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d7310339d
 创建NSTimer创建NSTimer的常用方法是
-1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeIn">
+1+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTim">
 <meta name="twitter:image" content="http://yoursite.com/2018/03/15/nstimer/NSTimer三种创建比较.png">
 
 
@@ -345,7 +351,8 @@ iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d73103
       
 
       
-        <p>= 选择 GCD 还是 NSTimer ？<br><a href="http://www.jianshu.com/p/0c050af6c5ee" target="_blank" rel="external">http://www.jianshu.com/p/0c050af6c5ee</a></p>
+        <h2 id="选择-GCD-还是-NSTimer-？"><a href="#选择-GCD-还是-NSTimer-？" class="headerlink" title="选择 GCD 还是 NSTimer ？"></a>选择 GCD 还是 NSTimer ？</h2><p><a href="http://www.jianshu.com/p/0c050af6c5ee" target="_blank" rel="external">http://www.jianshu.com/p/0c050af6c5ee</a></p>
+<p>内存管理</p>
 <h2 id="iOS开发-之-不要告诉我你会用NSTimer"><a href="#iOS开发-之-不要告诉我你会用NSTimer" class="headerlink" title="iOS开发 之 不要告诉我你会用NSTimer!"></a>iOS开发 之 不要告诉我你会用NSTimer!</h2><p><a href="http://www.jianshu.com/p/330d7310339d" target="_blank" rel="external">http://www.jianshu.com/p/330d7310339d</a></p>
 <h2 id="创建NSTimer"><a href="#创建NSTimer" class="headerlink" title="创建NSTimer"></a>创建NSTimer</h2><p>创建NSTimer的常用方法是</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)target selector:(SEL)aSelector userInfo:(id)userInfo repeats:(BOOL)repeats</div></pre></td></tr></table></figure>
@@ -377,27 +384,48 @@ iOS开发 之 不要告诉我你会用NSTimer!http://www.jianshu.com/p/330d73103
 <p>如果想要销毁NSTimer, 那么一定要调用invalidate方法</p>
 </blockquote>
 <h3 id="invalidate与-nil"><a href="#invalidate与-nil" class="headerlink" title="invalidate与=nil"></a>invalidate与=nil</h3><p>就像销毁其他<strong>强引用</strong>对象一样, 我们是否可以将NSTimer置nil, 而让iOS系统帮我们销毁NSTimer呢?</p>
-<p>Student *student = [[Student alloc]init];</p>
-<pre><code>__block Student *stu = student;
-student.name = @&quot;Hello World&quot;;
-student.study = ^{
-    NSLog(@&quot;my name is = %@&quot;,stu.name);
-    stu = nil;
-};
-
-student.study();
-</code></pre><p>__block不持有student即可。</p>
-<p>timer中的那些坑<br><a href="http://www.jianshu.com/p/544e2e24eda2" target="_blank" rel="external">http://www.jianshu.com/p/544e2e24eda2</a></p>
-<p>深入NSTimer(iOS)<br><a href="http://www.jianshu.com/p/583ca675065a" target="_blank" rel="external">http://www.jianshu.com/p/583ca675065a</a></p>
-<p>iOS笔记之NSTimer<br><a href="http://www.jianshu.com/p/d17430f4fc0f" target="_blank" rel="external">http://www.jianshu.com/p/d17430f4fc0f</a></p>
-<p>更可靠和高精度的 iOS 定时器<br>NSTimer / NSObject 的 (void)performSelector:(SEL)aSelector withObject:(id)anArgument afterDelay:(NSTimeInterval)delay; / CADisplayLink / GCD 的 dispatch_after / GCD 的 dispatch_source_t</p>
+<p>答案是: 不可以</p>
+<p>我们来看下使用NSTimer时, ARC是怎么工作的</p>
+<ul>
+<li>首先, 是创建NSTimer, 加入到runloop后, 除了ViewController之外iOS系统也会强引用NSTimer对象</li>
+</ul>
+<p><img src="/2018/03/15/nstimer/NSTimer4.png" alt=""></p>
+<ul>
+<li>当调用invalidate方法时, 移除runloop后, iOS系统会解除对NSTimer对象的强引用, 当ViewController销毁时, ViewController和NSTimer就都可以释放了</li>
+</ul>
+<p><img src="/2018/03/15/nstimer/NSTimer5.png" alt=""></p>
+<ul>
+<li>当将NSTimer对象置nil时, 虽然解除了ViewController对NSTimer的强引用, 但是iOS系统仍然对NSTimer和ViewController存在着强引用关系</li>
+</ul>
+<p>这里所说的iOS系统对ViewController的强引用, 不是指为了实现View显示的强引用, 而是指iOS为了实现NSTimer而对ViewController进行的额外强引用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">NSLog(@&quot;Retain count is %ld&quot;, CFGetRetainCount((__bridge CFTypeRef)self));</div><div class="line">    </div><div class="line">_timer = [NSTimer scheduledTimerWithTimeInterval:TimerInterval</div><div class="line">                                          target:self</div><div class="line">                                        selector:@selector(timerSelector:)</div><div class="line">                                        userInfo:nil</div><div class="line">                                         repeats:TimerRepeats];</div><div class="line">    </div><div class="line">NSLog(@&quot;Retain count is %ld&quot;, CFGetRetainCount((__bridge CFTypeRef)self));</div><div class="line">    </div><div class="line">[_timer invalidate];</div><div class="line">    </div><div class="line">NSLog(@&quot;Retain count is %ld&quot;, CFGetRetainCount((__bridge CFTypeRef)self));</div></pre></td></tr></table></figure>
+<p>创建NSTimer和销毁NSTimer后, ViewController(就是这里的self)引用计数的变化:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">2016-07-06 13:53:21.950 NSTimerAndDeallocDemo[2028:697020] Retain count is 7</div><div class="line">2016-07-06 13:53:21.950 NSTimerAndDeallocDemo[2028:697020] Retain count is 8</div><div class="line">2016-07-06 13:53:21.950 NSTimerAndDeallocDemo[2028:697020] Retain count is 7</div></pre></td></tr></table></figure>
+<p><img src="/2018/03/15/nstimer/NSTimer6.png" alt=""></p>
+<p>销毁NSTimer:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[_timer invalidate]; // 真正销毁NSTimer对象的地方</div><div class="line">_timer = nil; // 对象置nil是一种规范和习惯</div></pre></td></tr></table></figure>
+<p>销毁NSTimer的时机也是至关重要的!</p>
+<p>如果将上述销毁NSTimer的代码放到ViewController的dealloc方法里, 你会发现dealloc还是永远不会走的</p>
+<p>所以我们要将上述代码放到ViewController的其他生命周期方法里, 例如ViewWillDisappear中</p>
+<p>综上所述, 销毁NSTimer的正确姿势应该是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- (void)viewWillDisappear:(BOOL)animated &#123;</div><div class="line">    [super viewWillDisappear:animated];</div><div class="line"></div><div class="line">    [_timer invalidate];</div><div class="line">    _timer = nil;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>scheduledTimerWithTimeInterval创建的NSTimer 被加到了 RunLoop的 default mode.</p>
+<p>在UI滚动时, RunLoop 由 NSDefaultRunLoopMode 切换到 UITrackingRunLoopMode (当处理UI滚动操作时的mode). NSTimer是不会被及时触发的</p>
+<p>如果想要runloop运行在UITrackingRunLoopMode时, 仍然及时触发NSTimer那应该怎么办呢?</p>
+<p>应该使用timerWithTimeInterval或initWithFireDate, 在创建完NSTimer后, 自己加入到指定的runloop mode</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];</div></pre></td></tr></table></figure>
+<p>通常情况下NSDefaultRunLoopMode和UITrackingRunLoopMode都已经被加入到了common modes集合中, 所以不论runloop运行在哪种mode下, NSTimer都会被及时触发</p>
+<h2 id="timer中的那些坑"><a href="#timer中的那些坑" class="headerlink" title="timer中的那些坑"></a>timer中的那些坑</h2><p><a href="http://www.jianshu.com/p/544e2e24eda2" target="_blank" rel="external">http://www.jianshu.com/p/544e2e24eda2</a></p>
+<h2 id="深入NSTimer-iOS"><a href="#深入NSTimer-iOS" class="headerlink" title="深入NSTimer(iOS)"></a>深入NSTimer(iOS)</h2><p><a href="http://www.jianshu.com/p/583ca675065a" target="_blank" rel="external">http://www.jianshu.com/p/583ca675065a</a></p>
+<h2 id="iOS笔记之NSTimer"><a href="#iOS笔记之NSTimer" class="headerlink" title="iOS笔记之NSTimer"></a>iOS笔记之NSTimer</h2><p><a href="http://www.jianshu.com/p/d17430f4fc0f" target="_blank" rel="external">http://www.jianshu.com/p/d17430f4fc0f</a></p>
+<h2 id="更可靠和高精度的-iOS-定时器"><a href="#更可靠和高精度的-iOS-定时器" class="headerlink" title="更可靠和高精度的 iOS 定时器"></a>更可靠和高精度的 iOS 定时器</h2><p>NSTimer / NSObject 的 (void)performSelector:(SEL)aSelector withObject:(id)anArgument afterDelay:(NSTimeInterval)delay; / CADisplayLink / GCD 的 dispatch_after / GCD 的 dispatch_source_t</p>
 <p><a href="http://blog.lessfun.com/blog/2016/08/05/reliable-timer-in-ios/" target="_blank" rel="external">http://blog.lessfun.com/blog/2016/08/05/reliable-timer-in-ios/</a></p>
-<p>第52条：别忘了NSTimer会保留其目标对象<br><a href="https://www.jianshu.com/p/bfaad0dee84b" target="_blank" rel="external">https://www.jianshu.com/p/bfaad0dee84b</a></p>
-<p>iOS 中的 NSTimer<br><a href="https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/" target="_blank" rel="external">https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/</a></p>
+<h2 id="第52条：别忘了NSTimer会保留其目标对象"><a href="#第52条：别忘了NSTimer会保留其目标对象" class="headerlink" title="第52条：别忘了NSTimer会保留其目标对象"></a>第52条：别忘了NSTimer会保留其目标对象</h2><p><a href="https://www.jianshu.com/p/bfaad0dee84b" target="_blank" rel="external">https://www.jianshu.com/p/bfaad0dee84b</a></p>
+<h2 id="iOS-中的-NSTimer"><a href="#iOS-中的-NSTimer" class="headerlink" title="iOS 中的 NSTimer"></a>iOS 中的 NSTimer</h2><p><a href="https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/" target="_blank" rel="external">https://blog.callmewhy.com/2015/07/06/weak-timer-in-ios/</a></p>
 <p>5.NStimer准吗？谈谈你的看法？如果不准该怎样实现一个精确的NSTimer?</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">1.不准</div><div class="line">2.不准的原因如下：</div><div class="line">1、NSTimer加在main runloop中，模式是NSDefaultRunLoopMode，main负责所有主线程事件，例如UI界面的操作，复杂的运算，这样在同一个runloop中timer就会产生阻塞。</div><div class="line">2、模式的改变。主线程的 RunLoop 里有两个预置的 Mode：kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。</div><div class="line">当你创建一个 Timer 并加到 DefaultMode 时，Timer 会得到重复回调，但此时滑动一个ScrollView时，RunLoop 会将 mode 切换为 TrackingRunLoopMode，这时 Timer 就不会被回调，并且也不会影响到滑动操作。所以就会影响到NSTimer不准的情况。</div><div class="line">PS:DefaultMode 是 App 平时所处的状态，rackingRunLoopMode 是追踪 ScrollView 滑动时的状态。</div><div class="line">方法一：</div><div class="line">1、在主线程中进行NSTimer操作，但是将NSTimer实例加到main runloop的特定mode（模式）中。避免被复杂运算操作或者UI界面刷新所干扰。</div><div class="line">self.timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(showTime) userInfo:nil repeats:YES];</div><div class="line">[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];</div><div class="line">2、在子线程中进行NSTimer的操作，再在主线程中修改UI界面显示操作结果；</div><div class="line">- (void)timerMethod2 &#123;</div><div class="line">NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(newThread) object:nil];</div><div class="line">[thread start];</div><div class="line">&#125;</div><div class="line">- (void)newThread</div><div class="line">&#123;</div><div class="line">@autoreleasepool</div><div class="line">&#123;</div><div class="line">[NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(showTime) userInfo:nil repeats:YES];</div><div class="line">[[NSRunLoop currentRunLoop] run];</div><div class="line">&#125;</div><div class="line">&#125;</div><div class="line">总结：</div><div class="line">一开始的时候系统就为我们将主线程的main runloop隐式的启动了。</div><div class="line">在创建线程的时候，可以主动获取当前线程的runloop。每个子线程对应一个runloop</div><div class="line">方法二：</div><div class="line">使用示例</div><div class="line">使用mach内核级的函数可以使用mach_absolute_time()获取到CPU的tickcount的计数值，可以通过”mach_timebase_info”函数获取到纳秒级的精确度 。然后使用mach_wait_until(uint64_t deadline)函数，直到指定的时间之后，就可以执行指定任务了。</div><div class="line">关于数据结构mach_timebase_info的定义如下：</div><div class="line">struct mach_timebase_info &#123;uint32_t numer;uint32_t denom;&#125;;</div><div class="line">#include</div><div class="line">#include</div><div class="line">static const uint64_t NANOS_PER_USEC = 1000ULL;</div><div class="line">static const uint64_t NANOS_PER_MILLISEC = 1000ULL * NANOS_PER_USEC;</div><div class="line">static const uint64_t NANOS_PER_SEC = 1000ULL * NANOS_PER_MILLISEC;</div><div class="line">static mach_timebase_info_data_t timebase_info;</div><div class="line">static uint64_t nanos_to_abs(uint64_t nanos) &#123;</div><div class="line">return nanos * timebase_info.denom / timebase_info.numer;</div><div class="line">&#125;</div><div class="line">void example_mach_wait_until(int seconds)</div><div class="line">&#123;</div><div class="line">mach_timebase_info(&amp;timebase_info);</div><div class="line">uint64_t time_to_wait = nanos_to_abs(seconds * NANOS_PER_SEC);</div><div class="line">uint64_t now = mach_absolute_time();</div><div class="line">mach_wait_until(now + time_to_wait);</div><div class="line">&#125;</div><div class="line">方法三：直接使用GCD替代！</div></pre></td></tr></table></figure>
 <p>面试时如何优雅的谈论OC</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">轮播图中的NSTimer问题</div><div class="line"></div><div class="line">创建定时器：</div><div class="line"> 1：NSTimer *timer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此方法创建的定时器，必须加到NSRunLoop中。</div><div class="line">NSRunLoop *runLoop = [NSRunLoop currentRunLoop]; </div><div class="line">[runLoop addTimer:timer forMode: NSRunLoopCommonModes];</div><div class="line"> forMode的参数有两种类型可供选择： NSDefaultRunLoopMode ， NSRunLoopCommonModes，第一个参数为默认参数，当下面有textView，textfield等控件时，拖拽控件，此时轮播器会停止轮播，是因为NSRunLoop的原因，NSRunLoop为一个死循环，实时监测有无事件响应，如果当前线程就是主线程，也就是UI线程时，某些UI事件，比如UIScrollView的拖动操作，会将Run Loop切换成NSEventTrackingRunLoopMode模式，在这个过程中，默认的NSDefaultRunLoopMode模式中注册的事件是不会被执行的。NSRunLoopCommonModes 能够在多线程中起作用，这个模式等效于NSDefaultRunLoopMode和NSEventTrackingRunLoopMode的结合，这也是将modes换为NSRunLoopCommonModes便可解决的原因。</div><div class="line">2： self.timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此种创建定时器的方式，默认加到了runloop。</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">轮播图中的NSTimer问题</div><div class="line"></div><div class="line">创建定时器：</div><div class="line"> 1：NSTimer *timer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此方法创建的定时器，必须加到NSRunLoop中。</div><div class="line">NSRunLoop *runLoop = [NSRunLoop currentRunLoop]; </div><div class="line">[runLoop addTimer:timer forMode: NSRunLoopCommonModes];</div><div class="line"> forMode的参数有两种类型可供选择： NSDefaultRunLoopMode ， NSRunLoopCommonModes，第一个参数为默认参数，当下面有textView，textfield等控件时，拖拽控件，此时轮播器会停止轮播，是因为NSRunLoop的原因，NSRunLoop为一个死循环，实时监测有无事件响应，如果当前线程就是主线程，也就是UI线程时，某些UI事件，比如UIScrollView的拖动操作，会将Run Loop切换成NSEventTrackingRunLoopMode模式，在这个过程中，默认的NSDefaultRunLoopMode模式中注册的事件是不会被执行的。NSRunLoopCommonModes 能够在多线程中起作用，这个模式等效于NSDefaultRunLoopMode和NSEventTrackingRunLoopMode的结合，这也是将modes换为NSRunLoopCommonModes便可解决的原因。</div><div class="line"> </div><div class="line">2： self.timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(changeImage) userInfo:nil repeats:YES];</div><div class="line">此种创建定时器的方式，默认加到了runloop。</div></pre></td></tr></table></figure>
 <p>那些著名或非著名的iOS面试题－后编<br>4.NSTimer创建后，会在哪个线程运行。</p>
 <p>用scheduledTimerWithTimeInterval创建的，在哪个线程创建就会被加入哪个线程的RunLoop中就运行在哪个线程。<br>自己创建的Timer，加入到哪个线程的RunLoop中就运行在哪个线程。</p>
 <h2 id="NSTimer-不精确-正确的使用姿势"><a href="#NSTimer-不精确-正确的使用姿势" class="headerlink" title="NSTimer 不精确 正确的使用姿势"></a>NSTimer 不精确 正确的使用姿势</h2><p>RunLoop<br>timerWithTimeInterval scheduledTimerWithTimeInterval</p>
@@ -589,7 +617,7 @@ student.study();
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS开发-之-不要告诉我你会用NSTimer"><span class="nav-number">1.</span> <span class="nav-text">iOS开发 之 不要告诉我你会用NSTimer!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建NSTimer"><span class="nav-number">2.</span> <span class="nav-text">创建NSTimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#销毁NSTimer"><span class="nav-number">3.</span> <span class="nav-text">销毁NSTimer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与fire"><span class="nav-number">3.1.</span> <span class="nav-text">invalidate与fire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与-nil"><span class="nav-number">3.2.</span> <span class="nav-text">invalidate与=nil</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSTimer-不精确-正确的使用姿势"><span class="nav-number">4.</span> <span class="nav-text">NSTimer 不精确 正确的使用姿势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#和其他定时器的对比"><span class="nav-number">5.</span> <span class="nav-text">和其他定时器的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐患-内存泄漏-循环引用"><span class="nav-number">6.</span> <span class="nav-text">隐患 内存泄漏 循环引用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#选择-GCD-还是-NSTimer-？"><span class="nav-number">1.</span> <span class="nav-text">选择 GCD 还是 NSTimer ？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS开发-之-不要告诉我你会用NSTimer"><span class="nav-number">2.</span> <span class="nav-text">iOS开发 之 不要告诉我你会用NSTimer!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建NSTimer"><span class="nav-number">3.</span> <span class="nav-text">创建NSTimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#销毁NSTimer"><span class="nav-number">4.</span> <span class="nav-text">销毁NSTimer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与fire"><span class="nav-number">4.1.</span> <span class="nav-text">invalidate与fire</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invalidate与-nil"><span class="nav-number">4.2.</span> <span class="nav-text">invalidate与=nil</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#timer中的那些坑"><span class="nav-number">5.</span> <span class="nav-text">timer中的那些坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入NSTimer-iOS"><span class="nav-number">6.</span> <span class="nav-text">深入NSTimer(iOS)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS笔记之NSTimer"><span class="nav-number">7.</span> <span class="nav-text">iOS笔记之NSTimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更可靠和高精度的-iOS-定时器"><span class="nav-number">8.</span> <span class="nav-text">更可靠和高精度的 iOS 定时器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第52条：别忘了NSTimer会保留其目标对象"><span class="nav-number">9.</span> <span class="nav-text">第52条：别忘了NSTimer会保留其目标对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iOS-中的-NSTimer"><span class="nav-number">10.</span> <span class="nav-text">iOS 中的 NSTimer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NSTimer-不精确-正确的使用姿势"><span class="nav-number">11.</span> <span class="nav-text">NSTimer 不精确 正确的使用姿势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#和其他定时器的对比"><span class="nav-number">12.</span> <span class="nav-text">和其他定时器的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐患-内存泄漏-循环引用"><span class="nav-number">13.</span> <span class="nav-text">隐患 内存泄漏 循环引用</span></a></li></ol></div>
             
 
           </div>
